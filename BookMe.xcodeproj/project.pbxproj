@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		32F2441C2D8807B8005AC985 /* BookMe */ = {
+		32F20B8B2D8E99E3003F9717 /* BookMe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = BookMe;
 			sourceTree = "<group>";
@@ -75,7 +75,7 @@
 		32F244112D8807B8005AC985 = {
 			isa = PBXGroup;
 			children = (
-				32F2441C2D8807B8005AC985 /* BookMe */,
+				32F20B8B2D8E99E3003F9717 /* BookMe */,
 				32F244332D8807B9005AC985 /* BookMeTests */,
 				32F2443D2D8807B9005AC985 /* BookMeUITests */,
 				32F2441B2D8807B8005AC985 /* Products */,
@@ -108,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				32F2441C2D8807B8005AC985 /* BookMe */,
+				32F20B8B2D8E99E3003F9717 /* BookMe */,
 			);
 			name = BookMe;
 			packageProductDependencies = (
