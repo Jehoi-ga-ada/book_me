@@ -1,5 +1,13 @@
 import SwiftUI
 
+//Clamp Feature
+extension FloatingPoint {
+    func clamped(to range: ClosedRange<Self>) -> Self {
+        return max(min(self, range.upperBound), range.lowerBound)
+    }
+}
+//HOW TO USE print(x.clamped(to: 10...1000))
+
 struct ContentView: View {
     let backgroundGradient = LinearGradient(
         colors: [Color("top_gradient", bundle: .main), Color("bottom_gradient", bundle: .main)],
