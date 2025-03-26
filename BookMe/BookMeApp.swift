@@ -13,7 +13,7 @@ struct BookMeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MapView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContentView: View {
+struct MapView: View {
     let backgroundGradient = LinearGradient(
         colors: [Color("primary", bundle: .main), Color("secondary", bundle: .main)],
         startPoint: .top,
@@ -10,7 +10,7 @@ struct ContentView: View {
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
     
-    @State private var mapScale: CGFloat = 2
+    @State private var mapScale: CGFloat = 1
     @GestureState private var magnifyBy: CGFloat = 1.0
     
     let minimumZoomScale: CGFloat = 1.0
@@ -59,14 +59,13 @@ struct ContentView: View {
     
     var pinPointsLocation: [CGPoint] {
         [
-            CGPoint(x: 490, y: 120),
-            CGPoint(x: 490, y: 0),
-            CGPoint(x: -60, y: 90),
-            CGPoint(x: -160, y: 90),
-            CGPoint(x: -220, y: 70),
-            CGPoint(x: -395, y: -200),
-            CGPoint(x: -470, y: -90),
-            CGPoint(x: -445, y: -170),
+            CGPoint(x: 490, y: 120), // Collab 7
+            CGPoint(x: 490, y: 0), // Collab 7A
+            CGPoint(x: -60, y: 90), // Collab 1
+            CGPoint(x: -160, y: 90), // Collab 2
+            CGPoint(x: -220, y: 70), // Collab 3
+            CGPoint(x: -395, y: -200), // Collab 5
+            CGPoint(x: -470, y: -90), // Collab 4
         ]
     }
     
@@ -79,7 +78,6 @@ struct ContentView: View {
             CGPoint(x: 230.3333, y: -330.3333), //4
             CGPoint(x: 411.3333, y: -83.6667), //5
             CGPoint(x: 460.0, y: -180.0),      //6
-            CGPoint(x: 461.0, y: -132.3333),   //7
         ]
     }
     
@@ -135,7 +133,7 @@ struct ContentView: View {
                     HStack {
                         Button {
                             withAnimation {
-                                mapScale = 2.0
+                                mapScale = 1.0
                                 offset = .zero
                                 lastOffset = .zero
                             }
@@ -156,5 +154,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    MapView()
 }

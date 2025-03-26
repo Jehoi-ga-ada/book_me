@@ -30,7 +30,7 @@ struct BookFormView: View {
             }
             List {
                 // "Masukan Nama" row
-                NavigationLink(destination: ContentView()) {
+                NavigationLink(destination: MapView()) {
                     HStack {
                         Text("Masukan Nama")
                         Spacer()
@@ -39,7 +39,7 @@ struct BookFormView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-            }.frame()
+            }
             ScrollView{
                 
             }
