@@ -32,6 +32,20 @@ struct MapView: View {
             }
     }
     
+    // Helper function to compute clamped offset
+    private func clampedOffset(for proposedOffset: CGSize, in geometry: GeometryProxy) -> CGSize {
+        let extraWidth = max((geometry.size.width * mapScale) - geometry.size.width, 0)
+        let extraHeight = max((geometry.size.height * mapScale) - geometry.size.height, 0)
+        
+        let maxAllowedOffsetX = extraWidth / 2
+        let maxAllowedOffsetY = extraHeight / 2
+        
+        return CGSize(
+            width: min(max(proposedOffset.width, -maxAllowedOffsetX), maxAllowedOffsetX),
+            height: min(max(proposedOffset.height, -maxAllowedOffsetY), maxAllowedOffsetY)
+        )
+    }
+
     // MARK: - Drag Gesture
     func drag(for geometry: GeometryProxy) -> some Gesture {
         DragGesture()
@@ -40,20 +54,7 @@ struct MapView: View {
                     width: lastOffset.width + gesture.translation.width,
                     height: lastOffset.height + gesture.translation.height
                 )
-                
-                // Calculate extra width/height beyond the screen dimensions
-                let extraWidth = max((geometry.size.width * mapScale) - geometry.size.width, 0)
-                let extraHeight = max((geometry.size.height * mapScale) - geometry.size.height, 0)
-                
-                // The maximum allowed offset is half the extra dimension.
-                let maxAllowedOffsetX = extraWidth / 2
-                let maxAllowedOffsetY = extraHeight / 2
-                
-                let clampedOffset = CGSize(
-                    width: min(max(newOffset.width, -maxAllowedOffsetX), maxAllowedOffsetX),
-                    height: min(max(newOffset.height, -maxAllowedOffsetY), maxAllowedOffsetY)
-                )
-                offset = clampedOffset
+                offset = clampedOffset(for: newOffset, in: geometry)
             }
             .onEnded { _ in
                 lastOffset = offset
@@ -61,10 +62,13 @@ struct MapView: View {
     }
     
     // MARK: - Focus on Pin function
-    private func focusOnPin(_ pin: CGPoint) {
+    /// Make this a normal instance method so it can modify `mapScale`, `offset`, etc.
+    private func focusOnPin(_ pin: CGPoint, geometry: GeometryProxy) {
         withAnimation {
             mapScale = 3.0
-            offset = CGSize(width: pin.x, height: pin.y)
+            
+            let proposedOffset = CGSize(width: pin.x, height: pin.y)
+            offset = clampedOffset(for: proposedOffset, in: geometry)
             lastOffset = offset
         }
     }
@@ -73,7 +77,7 @@ struct MapView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // MARK: - Background
+                // Background
                 backgroundGradient
                 Rectangle()
                     .fill(
@@ -85,42 +89,28 @@ struct MapView: View {
                     .opacity(0.7)
                     .edgesIgnoringSafeArea(.all)
                 
-                // MARK: - Map Content
+                // Map Content
                 ZStack {
                     Image("academy_map")
                         .resizable()
                         .scaledToFit()
                         .scaleEffect(mapScale * magnifyBy)
                     
+                    // Place each CollabRoomPinView
                     ForEach(allCollabRooms, id: \.name) { collabRoom in
-                        VStack{
-                           
-                            Button(action: {
-                                focusOnPin(collabRoom.pinPointsZoomLocation)
-                                print("pin point pressed! \(collabRoom.name)")
-                            }) {
-                                Text("\(collabRoom.name)")
-                                    .font(.title.bold())
-                                    .foregroundColor(.white).padding(8).background(Color("darkColor").opacity(0.8)).cornerRadius(99).frame(width: 64, height: 32)
-                                
-                            }
-                            Button(action: {
-                                focusOnPin(collabRoom.pinPointsZoomLocation)
-                                print("pin point pressed! \(collabRoom.name)")
-                            }) {
-                                    Image("pin_point")
-                                        .resizable()
-                                        .scaledToFit().frame(height: 40)
-                                
-                            }
+                        CollabRoomPinView(
+                            collabRoom: collabRoom,
+                            scale: mapScale / 3 * magnifyBy
+                        ) { tappedRoom in
+                            // When tapped, focus on pin
+                            focusOnPin(tappedRoom.pinPointsZoomLocation, geometry: geometry)
+                            print("Pin point pressed! \(tappedRoom.name)")
                         }
-                        .position(collabRoom.pinPointsLocation)
-                        .scaleEffect(mapScale / 3 * magnifyBy)
-                        .frame(width: 36, height: 40)
                     }
                 }
                 .offset(offset)
                 
+                // Reset button
                 VStack {
                     HStack {
                         Button {
@@ -138,13 +128,15 @@ struct MapView: View {
                     Spacer()
                 }
             }
-            // Combine the drag and magnification gestures.
+            // Combine the drag and magnification gestures
             .gesture(drag(for: geometry).simultaneously(with: magnification))
             .ignoresSafeArea()
         }
     }
 }
 
-#Preview {
-    MapView()
+struct MapView_Previews: PreviewProvider {
+    static var previews: some View {
+        MapView()
+    }
 }
