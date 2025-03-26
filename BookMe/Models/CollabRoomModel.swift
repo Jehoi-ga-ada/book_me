@@ -6,9 +6,10 @@
 //
 import Foundation
 
-struct CollabRoomModel {
+struct CollabRoomModel: Identifiable {
+    let id: UUID = UUID()
     var name: String
     var pinPointsLocation: CGPoint
     var pinPointsZoomLocation: CGPoint
-    var capacity: Int
+    var imagePreviews: [String]
 }

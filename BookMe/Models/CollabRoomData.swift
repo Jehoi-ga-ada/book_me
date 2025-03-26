@@ -4,10 +4,8 @@
 //
 //  Created by Jehoiada Wong on 26/03/25.
 //
-import Observation
 import Foundation
 
-@Observable
 final class CollabRoomData {
     static func generateCollabRooms() -> [CollabRoomModel] {
         var pinPointsLocation: [CGPoint] {
@@ -46,16 +44,29 @@ final class CollabRoomData {
             ]
         }
         
-        var capacaties: [Int] {
+//        var capacaties: [Int] {
+//            [
+//                6,
+//                8,
+//                8,
+//                8,
+//                8,
+//                8,
+//                8,
+//                8
+//            ]
+//        }
+        
+        var images: [[String]] {
             [
-                6,
-                8,
-                8,
-                8,
-                8,
-                8,
-                8,
-                8
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
             ]
         }
         
@@ -64,7 +75,7 @@ final class CollabRoomData {
             collabRooms.append(CollabRoomModel(name: names[i],
                                           pinPointsLocation: pinPointsLocation[i],
                                           pinPointsZoomLocation: pinPointsZoomLocation[i],
-                                          capacity: capacaties[i]))
+                                               imagePreviews: images[i]))
         }
         return collabRooms
     }
