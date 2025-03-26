@@ -94,13 +94,26 @@ struct MapView: View {
                         .scaleEffect(mapScale * magnifyBy)
                     
                     ForEach(allCollabRooms, id: \.name) { collabRoom in
-                        Button(action: {
-                            focusOnPin(collabRoom.pinPointsZoomLocation)
-                            print("pin point pressed! \(collabRoom.name)")
-                        }) {
-                            Image("pin_point")
-                                .resizable()
-                                .scaledToFit()
+                        VStack{
+                           
+                            Button(action: {
+                                focusOnPin(collabRoom.pinPointsZoomLocation)
+                                print("pin point pressed! \(collabRoom.name)")
+                            }) {
+                                Text("\(collabRoom.name)")
+                                    .font(.title.bold())
+                                    .foregroundColor(.white).padding(8).background(Color("darkColor").opacity(0.8)).cornerRadius(99).frame(width: 64, height: 32)
+                                
+                            }
+                            Button(action: {
+                                focusOnPin(collabRoom.pinPointsZoomLocation)
+                                print("pin point pressed! \(collabRoom.name)")
+                            }) {
+                                    Image("pin_point")
+                                        .resizable()
+                                        .scaledToFit().frame(height: 40)
+                                
+                            }
                         }
                         .position(collabRoom.pinPointsLocation)
                         .scaleEffect(mapScale / 3 * magnifyBy)

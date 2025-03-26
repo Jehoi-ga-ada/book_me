@@ -13,12 +13,12 @@ final class CollabRoomData {
         var pinPointsLocation: [CGPoint] {
             [
                 CGPoint(x: 490, y: 120), // Collab 7
-                CGPoint(x: 490, y: 0), // Collab 7A
+                CGPoint(x: 510, y: -30), // Collab 7A
                 CGPoint(x: -60, y: 90), // Collab 1
-                CGPoint(x: -160, y: 90), // Collab 2
-                CGPoint(x: -220, y: 70), // Collab 3
-                CGPoint(x: -395, y: -200), // Collab 5
-                CGPoint(x: -470, y: -90), // Collab 4
+                CGPoint(x: -160, y: 100), // Collab 2
+                CGPoint(x: -240, y: 60), // Collab 3
+                CGPoint(x: -415, y: -230), // Collab 5
+                CGPoint(x: -500, y: -110), // Collab 4
             ]
         }
         
@@ -36,13 +36,13 @@ final class CollabRoomData {
         
         var names: [String] {
             [
-                "Collab 7",
-                "Collab 7A",
-                "Collab 1",
-                "Collab 2",
-                "Collab 3",
-                "Collab 5",
-                "Collab 4",
+                "7",
+                "7A",
+                "1",
+                "2",
+                "3",
+                "5",
+                "4",
             ]
         }
         
