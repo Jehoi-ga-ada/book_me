@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     let backgroundGradient = LinearGradient(
-        colors: [Color("top_gradient", bundle: .main), Color("bottom_gradient", bundle: .main)],
+        colors: [Color("primary", bundle: .main), Color("secondary", bundle: .main)],
         startPoint: .top,
         endPoint: .bottom
     )
