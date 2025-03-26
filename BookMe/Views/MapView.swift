@@ -1,5 +1,4 @@
 import SwiftUI
-import Observation
 
 struct MapView: View {
     let backgroundGradient = LinearGradient(
