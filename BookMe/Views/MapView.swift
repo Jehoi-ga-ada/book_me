@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MapView: View {
     let backgroundGradient = LinearGradient(
-        colors: [Color("primaryColor", bundle: .main), Color("secondaryColor", bundle: .main)],
+        colors: [Color("PrimeColor", bundle: .main), Color("SecondColor", bundle: .main)],
         startPoint: .top,
         endPoint: .bottom
     )
@@ -77,7 +77,6 @@ struct MapView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background
                 backgroundGradient
                 Rectangle()
                     .fill(
@@ -89,20 +88,17 @@ struct MapView: View {
                     .opacity(0.7)
                     .edgesIgnoringSafeArea(.all)
                 
-                // Map Content
                 ZStack {
                     Image("academy_map")
                         .resizable()
                         .scaledToFit()
                         .scaleEffect(mapScale * magnifyBy)
                     
-                    // Place each CollabRoomPinView
                     ForEach(allCollabRooms, id: \.name) { collabRoom in
                         CollabRoomPinView(
                             collabRoom: collabRoom,
                             scale: mapScale / 3 * magnifyBy
                         ) { tappedRoom in
-                            // When tapped, focus on pin
                             focusOnPin(tappedRoom.pinPointsZoomLocation, geometry: geometry)
                             print("Pin point pressed! \(tappedRoom.name)")
                         }
@@ -110,7 +106,6 @@ struct MapView: View {
                 }
                 .offset(offset)
                 
-                // Reset button
                 VStack {
                     HStack {
                         Button {
@@ -128,7 +123,6 @@ struct MapView: View {
                     Spacer()
                 }
             }
-            // Combine the drag and magnification gestures
             .gesture(drag(for: geometry).simultaneously(with: magnification))
             .ignoresSafeArea()
         }
