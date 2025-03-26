@@ -18,6 +18,8 @@ struct MapView: View {
     let minimumZoomScale: CGFloat = 1.0
     let maximumZoomScale: CGFloat = 3.0
     
+    @State private var showingBottomSheet: Bool = false
+    
     // MARK: - Gesture Motion
     var magnification: some Gesture {
         MagnifyGesture()
@@ -94,7 +96,7 @@ struct MapView: View {
                         .scaledToFit()
                         .scaleEffect(mapScale * magnifyBy)
                     
-                    ForEach(allCollabRooms, id: \.name) { collabRoom in
+                    ForEach(allCollabRooms) { collabRoom in
                         CollabRoomPinView(
                             collabRoom: collabRoom,
                             scale: mapScale / 3 * magnifyBy
@@ -126,11 +128,18 @@ struct MapView: View {
             .gesture(drag(for: geometry).simultaneously(with: magnification))
             .ignoresSafeArea()
         }
+        .onAppear() {
+            showingBottomSheet = true
+        }
+        .sheet(isPresented: $showingBottomSheet){
+            HistoryView()
+                .interactiveDismissDisabled()
+                .presentationDetents([.height(25), .medium, .large])
+                .presentationBackgroundInteraction(.enabled(upThrough: .large))
+        }
     }
 }
 
-struct MapView_Previews: PreviewProvider {
-    static var previews: some View {
-        MapView()
-    }
+#Preview {
+    MapView()
 }
