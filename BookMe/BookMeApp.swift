@@ -14,6 +14,7 @@ struct BookMeApp: App {
     var body: some Scene {
         WindowGroup {
             MapView()
+                .preferredColorScheme(.dark)  // Force Dark Mode
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

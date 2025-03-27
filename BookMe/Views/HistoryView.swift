@@ -23,19 +23,28 @@ struct HistoryView: View {
         }
     }
     
-    var body: some View{
-        NavigationStack{
-            ScrollView{
-                VStack (alignment: .leading){
-                    ForEach(filteredReceipts) { receipt in
-                        HistoryCard(model: receipt)
+    var body: some View {
+        NavigationStack {
+            VStack() {
+                Text("")
+                    .navigationTitle("")
+                    .navigationBarTitleDisplayMode(.large)
+                    .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Text("Welcome To BookMe")
+                                .font(.system(size: 32, weight: .bold))
+                                .foregroundColor(Color("PrimeColor"))
+                                .padding(.top, 40)
+                        }
                     }
+                .searchable(text: $searchText , prompt: "Search Booking History")
+                ScrollView {
+                        ForEach(filteredReceipts) { receipt in
+                            HistoryCard(model: receipt)
+                        }
                 }
-                .navigationTitle("Book History")
             }
         }
-        .ignoresSafeArea()
-        .searchable(text: $searchText)
     }
 }
 

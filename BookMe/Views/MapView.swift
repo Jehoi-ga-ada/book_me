@@ -131,15 +131,26 @@ struct MapView: View {
         .onAppear() {
             showingBottomSheet = true
         }
-        .sheet(isPresented: $showingBottomSheet){
+        .sheet(isPresented: $showingBottomSheet) {
             HistoryView()
                 .interactiveDismissDisabled()
-                .presentationDetents([.height(25), .medium, .large])
+                .presentationDetents([.height(64), .medium, .large])
                 .presentationBackgroundInteraction(.enabled(upThrough: .large))
+                .presentationBackground {
+                    Color.dark
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 10)
+//                                .stroke(Color.prime, lineWidth: 8)
+//                        )
+                }
         }
+
+
     }
 }
 
 #Preview {
     MapView()
+        .preferredColorScheme(.dark)
+
 }
