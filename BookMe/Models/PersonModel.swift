@@ -6,9 +6,16 @@
 //
 
 import Foundation
+import SwiftData
 
-struct PersonModel: Identifiable {
-    let id: UUID = UUID()
+@Model
+class PersonModel: Identifiable {
+    var id: UUID = UUID()
     var name: String
     var totalBooked: Int
+    
+    init(name: String, totalBooked: Int) {
+        self.name = name
+        self.totalBooked = totalBooked
+    }
 }
