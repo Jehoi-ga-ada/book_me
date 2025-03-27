@@ -91,12 +91,14 @@ struct AlertControllerModifier: ViewModifier {
                     Button(alertController.primaryButtonText) {
                         alertController.primaryAction?()
                         alertController.showAlert = false
+                        isAlertPresented = false  // Explicitly set to false
                     }
                     
                     if let secondaryText = alertController.secondaryButtonText {
                         Button(secondaryText, role: .destructive) {
                             alertController.secondaryAction?()
                             alertController.showAlert = false
+                            isAlertPresented = false  // Explicitly set to false
                         }
                     }
                 },
@@ -104,10 +106,19 @@ struct AlertControllerModifier: ViewModifier {
                     Text(alertController.alertMessage)
                 }
             )
+            .onDisappear {
+                // This ensures the controller state is synchronized when alert is dismissed by tapping outside
+                if isAlertPresented {
+                    alertController.showAlert = false
+                    isAlertPresented = false
+                }
+            }
     }
 }
 
-// MARK: - INI CARA PENGUNAAN
+// MARK: - Example Usage
+// JANGAN LUPA ADD INI DI AKHIR         .withAlertController(alertController)
+
 struct ContentView: View {
     @State private var alertController = AlertViewController()
     
@@ -124,37 +135,51 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 20) {
             Button("Show Server Error Alert") {
-                alertController.showErrorAlert(
-                    title: "Unable to Save Workout Data",
-                    message: "The connection to the server was lost.",
-                    retryButtonText: "Try Again",
-                    cancelButtonText: "Delete",
-                    retryAction: saveWorkoutData,
-                    cancelAction: deleteWorkoutData
-                )
+                // Make sure to explicitly set showAlert to false before showing a new alert
+                alertController.showAlert = false
+                
+                // Small delay to ensure state changes are processed
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    alertController.showErrorAlert(
+                        title: "Unable to Save Workout Data",
+                        message: "The connection to the server was lost.",
+                        retryButtonText: "Try Again",
+                        cancelButtonText: "Delete",
+                        retryAction: saveWorkoutData,
+                        cancelAction: deleteWorkoutData
+                    )
+                }
             }
             
             Button("Show Basic Alert") {
-                alertController.showBasicAlert(
-                    title: "Information",
-                    message: "Your workout was recorded successfully!",
-                    buttonText: "Great"
-                )
+                alertController.showAlert = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    alertController.showBasicAlert(
+                        title: "Information",
+                        message: "Your workout was recorded successfully!",
+                        buttonText: "Great"
+                    )
+                }
             }
             
             Button("Show Confirmation Alert") {
-                alertController.showConfirmationAlert(
-                    title: "End Workout",
-                    message: "Are you sure you want to end your current workout?",
-                    primaryButtonText: "Yes, End It",
-                    secondaryButtonText: "Continue Workout",
-                    primaryAction: {
-                        print("Workout ended")
-                    },
-                    secondaryAction: {
-                        print("Workout continued")
-                    }
-                )
+                alertController.showAlert = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    alertController.showConfirmationAlert(
+                        title: "End Workout",
+                        message: "Are you sure you want to end your current workout?",
+                        primaryButtonText: "Yes, End It",
+                        secondaryButtonText: "Continue Workout",
+                        primaryAction: {
+                            print("Workout ended")
+                        },
+                        secondaryAction: {
+                            print("Workout continued")
+                        }
+                    )
+                }
             }
         }
         .padding()
