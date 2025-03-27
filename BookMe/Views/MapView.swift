@@ -102,7 +102,7 @@ struct MapView: View {
                             collabRoom: collabRoom,
                             scale: mapScale / 3 * magnifyBy
                         ) { tappedRoom in
-                            focusOnPin(tappedRoom.pinPointsZoomLocation, geometry: geometry)
+                            focusOnPin(tappedRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
                             print("Pin point pressed! \(tappedRoom.name)")
                         }
                     }
@@ -170,4 +170,5 @@ struct HistoryViewAdapter: View {
 #Preview {
     MapView()
         .preferredColorScheme(.dark)
+        .modelContainer(SampleData.shared.modelContainer)
 }

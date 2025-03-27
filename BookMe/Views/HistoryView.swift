@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HistoryView: View {
+    @Environment(\.modelContext) private var context
+    
     public let backgroundGradient = LinearGradient(
         colors: [Color("PrimeColor", bundle: .main), Color("SecondColor", bundle: .main)],
         startPoint: .top,
@@ -15,7 +18,7 @@ struct HistoryView: View {
     )
     
     @State private var searchText: String = ""
-    private let bookingReceipts: [BookingReceiptModel] = BookingReceiptData.createDummyBookingReceipts()
+    @Query private var bookingReceipts: [BookingReceiptModel]
     
     @State private var focusedCardId: UUID? = nil
     
@@ -42,7 +45,7 @@ struct HistoryView: View {
                                 .padding(.top, 40)
                         }
                     }
-                .searchable(text: $searchText, prompt: "Search Booking History")
+                    .searchable(text: $searchText, prompt: "Search Booking History")
                 ScrollView {
                     ForEach(filteredReceipts) { receipt in
                         // Using updated wrapper
@@ -61,6 +64,8 @@ struct HistoryView: View {
 }
 
 struct HistoryCardWrapper: View {
+    @Environment(\.modelContext) private var context
+    
     var model: BookingReceiptModel
     @Binding var focusedCardId: UUID?
     
@@ -86,6 +91,9 @@ struct HistoryCardWrapper: View {
             onCardClick: {
                 focusedCardId = model.id
                 handleCardClick(model: model)
+            },
+            onDelete: {
+                deleteItem(model)
             }
         )
     }
@@ -94,7 +102,17 @@ struct HistoryCardWrapper: View {
 
         
         if let onFocusOnPin = onFocusOnPin, let geometry = geometry {
-            onFocusOnPin(model.collab.pinPointsZoomLocation, geometry)
+            onFocusOnPin(model.collab.pinPointsZoomLocation.cgPoint, geometry)
         }
     }
+    
+    private func deleteItem(_ item: BookingReceiptModel) {
+        context.delete(item) // Remove from SwiftData
+        try? context.save() // Save changes
+    }
+}
+
+#Preview {
+    HistoryView()
+        .modelContainer(SampleData.shared.modelContainer)
 }

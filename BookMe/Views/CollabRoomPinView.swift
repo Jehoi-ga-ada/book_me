@@ -42,7 +42,7 @@ struct CollabRoomPinView: View {
                     .frame(height: 40)
             }
         }
-        .position(collabRoom.pinPointsLocation)
+        .position(collabRoom.pinPointsLocation.cgPoint)
         .scaleEffect(scale)
         .frame(width: 36, height: 40)
     }

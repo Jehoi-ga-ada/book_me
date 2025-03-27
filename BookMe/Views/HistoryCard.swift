@@ -11,6 +11,7 @@ struct HistoryCard: View {
     var model: BookingReceiptModel
     @Binding var onFocus: Bool
     var onCardClick: () -> Void
+    var onDelete: () -> Void
     
     var body: some View {
         Button(action: {
@@ -43,7 +44,7 @@ struct HistoryCard: View {
                     .background(Color.orange)
                     .cornerRadius(999)
                     Spacer()
-                    Button(action: {}) {
+                    Button(action: onDelete) {
                         Text("Delete").font(.headline).bold()
                             .frame(width: 60)
                             .foregroundColor(.white)
