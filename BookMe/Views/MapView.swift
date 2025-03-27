@@ -134,7 +134,7 @@ struct MapView: View {
         .sheet(isPresented: $showingBottomSheet) {
             HistoryView()
                 .interactiveDismissDisabled()
-                .presentationDetents([.height(64), .medium, .large])
+                .presentationDetents([.medium, .medium, .large])
                 .presentationBackgroundInteraction(.enabled(upThrough: .large))
                 .presentationBackground {
                     Color.dark

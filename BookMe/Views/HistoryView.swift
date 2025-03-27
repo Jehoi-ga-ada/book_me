@@ -41,6 +41,7 @@ struct HistoryView: View {
                 ScrollView {
                         ForEach(filteredReceipts) { receipt in
                             HistoryCard(model: receipt)
+                                .padding(8)
                         }
                 }
             }
