@@ -1,52 +1,90 @@
 //
-//  BookFormView.swift
+//  sheetBookMe.swift
 //  BookMe
 //
-//  Created by Jehoiada Wong on 24/03/25.
+//  Created by Aurelly Joeandani on 25/03/25.
 //
 
 import SwiftUI
 
-struct BookFormView: View {
-    var colab_name: String = "Collab Room 1"
-    @State private var date = Date()
-    @State private var name: String = "Budiono"
+struct sheetBookMe: View {
+    var roomName: String
+    var roomImage: String // Nama gambar dalam asset
+    @State private var userName: String = ""
+    @State private var selectedAvailability: String = ""
+    @State private var selectedDate = Date()
+    @State private var showDatePicker = false
     
+    let availabilityOptions = ["Available", "Occupied", "Maintenance"]
+        
     var body: some View {
-        VStack{
+        HStack {
+            Text(roomName)
+                .font(.largeTitle)
+                .padding()
+                .foregroundColor(.primary)
+                .cornerRadius(10)
+            
+            Spacer()
+            DatePicker("", selection: $selectedDate, displayedComponents: [.date])
+            .padding()
+            .foregroundColor(.blue)
+        }
+        VStack(alignment: .leading, spacing: 30) {
             HStack{
-                Text(colab_name)
-                DatePicker(
-                    "Start Date",
-                    selection: $date,
-                    displayedComponents: [.date]
-                )
-            }
-            HStack{
-                Image(systemName: "square.and.arrow.up")
-                Image(systemName: "square.and.arrow.up")
-                Image(systemName: "square.and.arrow.up")
+                Image(roomImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                Image(roomImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                Image(roomImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
                 Spacer()
             }
-            List {
-                // "Masukan Nama" row
-                NavigationLink(destination: MapView()) {
-                    HStack {
-                        Text("Masukan Nama")
-                        Spacer()
-                        // Show the current name in a secondary color
-                        Text(name)
-                            .foregroundColor(.secondary)
+            Button {
+                //
+            } label: {
+                TextField("Enter your name", text: $userName).textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+            }
+
+        }
+            VStack(spacing: 20) {
+                    
+                Picker("Room Availability", selection: $selectedAvailability) {
+                            ForEach(availabilityOptions, id: \ .self) { option in Text(option)
+                                        }
+                                    }
+                .pickerStyle(WheelPickerStyle())
+                .frame(height: 100)
+                                    
+                Spacer()
+                                    
+                Button(action: {
+                    print("Room booked by \(userName)")
+                }) {
+                    Text("Book")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
                     }
                 }
-            }
-            ScrollView{
-                
-            }
         }
-    }
+    private func formattedDate() -> String {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            return formatter.string(from: selectedDate)
+        }
 }
 
 #Preview {
-    BookFormView()
+    sheetBookMe(roomName: "Collab Room 1", roomImage: "Collab1")
 }
