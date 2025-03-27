@@ -25,5 +25,5 @@ class BookingReceiptModel: Identifiable{
         self.pin = pin
     }
     
-    static let sampleData: [BookingReceiptModel] = BookingReceiptData.createDummyBookingReceipts()
+    static let sampleData = BookingReceiptData.createDummyBookingReceipts()
 }

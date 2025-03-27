@@ -4,7 +4,6 @@
 //
 //  Created by Jehoiada Wong on 26/03/25.
 //
-
 import Foundation
 import SwiftData
 
@@ -19,5 +18,5 @@ class PersonModel: Identifiable {
         self.totalBooked = totalBooked
     }
     
-    static let sampleData: [PersonModel] = PersonData.generateFivePerson()
+    static let sampleData = PersonData.generateFivePerson()
 }
