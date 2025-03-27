@@ -19,6 +19,7 @@ struct MapView: View {
     let maximumZoomScale: CGFloat = 3.0
     
     @State private var showingBottomSheet: Bool = false
+    @State private var bottomSheetHeight: PresentationDetent = .height(64)
     
     // MARK: - Gesture Motion
     var magnification: some Gesture {
@@ -127,14 +128,18 @@ struct MapView: View {
             }
             .gesture(drag(for: geometry).simultaneously(with: magnification))
             .ignoresSafeArea()
-        }
-        .onAppear() {
-            showingBottomSheet = true
-        }
-        .sheet(isPresented: $showingBottomSheet) {
-            HistoryView()
+            .onAppear() {
+                showingBottomSheet = true
+            }
+            .sheet(isPresented: $showingBottomSheet) {
+                HistoryViewAdapter(
+                    focusOnPinFunction: { pin, geo in
+                        focusOnPin(pin, geometry: geo)
+                    },
+                    geometry: geometry
+                )
                 .interactiveDismissDisabled()
-                .presentationDetents([.medium, .medium, .large])
+                .presentationDetents([.height(64), .medium, .large], selection: $bottomSheetHeight)
                 .presentationBackgroundInteraction(.enabled(upThrough: .large))
                 .presentationBackground {
                     Color.dark
@@ -143,14 +148,26 @@ struct MapView: View {
 //                                .stroke(Color.prime, lineWidth: 8)
 //                        )
                 }
+            }
         }
+    }
+}
 
-
+struct HistoryViewAdapter: View {
+    var focusOnPinFunction: (CGPoint, GeometryProxy) -> Void
+    var geometry: GeometryProxy
+    
+    var body: some View {
+        HistoryView(
+            onFocusOnPin: { collabRoom, geo in
+                focusOnPinFunction(collabRoom, geo)
+            },
+            geometry: geometry
+        )
     }
 }
 
 #Preview {
     MapView()
         .preferredColorScheme(.dark)
-
 }
