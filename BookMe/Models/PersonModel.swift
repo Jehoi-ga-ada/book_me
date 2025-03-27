@@ -18,4 +18,6 @@ class PersonModel: Identifiable {
         self.name = name
         self.totalBooked = totalBooked
     }
+    
+    static let sampleData: [PersonModel] = PersonData.generateFivePerson()
 }

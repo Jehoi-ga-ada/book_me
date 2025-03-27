@@ -21,4 +21,6 @@ class CollabRoomModel: Identifiable {
         self.pinPointsZoomLocation = pinPointsZoomLocation
         self.imagePreviews = imagePreviews
     }
+    
+    static let sampleData: [CollabRoomModel] = CollabRoomData.generateCollabRooms()
 }
