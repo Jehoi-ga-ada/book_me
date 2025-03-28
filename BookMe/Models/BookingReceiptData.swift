@@ -20,12 +20,19 @@ final class BookingReceiptData {
             ]
         }
         
-        var dates: [Date] {
-            let calendar = Calendar.current
-            let startDate = calendar.date(from: DateComponents(year: 2000, month: 1, day: 1))!
-            let endDate = calendar.date(from: DateComponents(year: 2030, month: 1, day: 1))!
-            
-            return (0..<5).map { _ in Date.random(between: startDate, and: endDate) }
+//        var dates: [Date] {
+//            let calendar = Calendar.current
+//            let startDate = calendar.date(from: DateComponents(year: 2000, month: 1, day: 1))!
+//            let endDate = calendar.date(from: DateComponents(year: 2030, month: 1, day: 1))!
+//            
+//            return (0..<5).map { _ in Date.random(between: startDate, and: endDate) }
+//        }
+        
+        var dates = [Date]()
+        for dayOffset in 0..<5 {
+            if let newDate = Calendar.current.date(byAdding: .day, value: dayOffset, to: Date()) {
+                dates.append(newDate)
+            }
         }
         
         var bookedBy: [PersonModel] {
