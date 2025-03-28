@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct MapView: View {
     let backgroundGradient = LinearGradient(
@@ -7,7 +8,8 @@ struct MapView: View {
         endPoint: .bottom
     )
     
-    @State private var allCollabRooms: [CollabRoomModel] = CollabRoomData.generateCollabRooms()
+    @Query private var allCollabRooms: [CollabRoomModel]
+    @State private var selectedCollabRoom: CollabRoomModel? = nil
     
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
@@ -19,6 +21,7 @@ struct MapView: View {
     let maximumZoomScale: CGFloat = 3.0
     
     @State private var showingBottomSheet: Bool = false
+    @State private var showingBookingForm: Bool = false
     @State private var bottomSheetHeight: PresentationDetent = .height(64)
     
     // MARK: - Gesture Motion
@@ -76,6 +79,14 @@ struct MapView: View {
         }
     }
     
+    private func focusAndBook(collabRoom: CollabRoomModel, geometry: GeometryProxy) {
+        selectedCollabRoom = collabRoom
+        focusOnPin(collabRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
+        
+        showingBookingForm = true
+        showingBottomSheet = false
+    }
+    
     // MARK: - Map View
     var body: some View {
         GeometryReader { geometry in
@@ -102,7 +113,8 @@ struct MapView: View {
                             collabRoom: collabRoom,
                             scale: mapScale / 3 * magnifyBy
                         ) { tappedRoom in
-                            focusOnPin(tappedRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
+//                            focusOnPin(tappedRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
+                            focusAndBook(collabRoom: tappedRoom, geometry: geometry)
                             print("Pin point pressed! \(tappedRoom.name)")
                         }
                     }
@@ -143,11 +155,17 @@ struct MapView: View {
                 .presentationBackgroundInteraction(.enabled(upThrough: .large))
                 .presentationBackground {
                     Color.dark
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 10)
-//                                .stroke(Color.prime, lineWidth: 8)
-//                        )
                 }
+            }
+            .sheet(isPresented: $showingBookingForm, onDismiss: {
+                showingBottomSheet = true
+            }) {
+                BookFormView(collabRoom: selectedCollabRoom!)
+                    .presentationDetents([.medium, .large])
+                    .presentationBackgroundInteraction(.enabled(upThrough: .large))
+                    .presentationBackground {
+                        Color.dark
+                    }
             }
         }
     }

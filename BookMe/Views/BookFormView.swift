@@ -1,11 +1,12 @@
 //
-//  sheetBookMe.swift
+//  BookFormView.swift
 //  BookMe
 //
 //  Created by Aurelly Joeandani on 25/03/25.
 //
 
 import SwiftUI
+import SwiftData
 
 struct Room: Identifiable {
     let id = UUID()
@@ -14,15 +15,19 @@ struct Room: Identifiable {
     var availability: [String: String] // Key: session, Value: status
 }
 
-struct sheetBookMe: View {
-    var roomName: String
-    var roomImage: String
+struct BookFormView: View {
+    var collabRoom: CollabRoomModel
+    
     @State private var userName: String = ""
     @State private var selectedDate = Date()
     @State private var selectedSession: String?
     @State private var isImagePreviewPresented = false
     @State private var isBookingConfirmed = false
     @State private var filteredUserNames: [String] = []
+    
+    var availability: [String: Bool] {
+        collabRoom.availableSessions(on: selectedDate)
+    }
     
     let sessions = [
         "08:45 - 09:55", "10:10 - 11:20", "11:35 - 12:45",
@@ -40,7 +45,7 @@ struct sheetBookMe: View {
     var body: some View {
         VStack {
             HStack {
-                Text(room.name)
+                Text("Collab Room \(collabRoom.name)")
                     .font(.title)
                     .bold()
                     .padding()
@@ -95,28 +100,27 @@ struct sheetBookMe: View {
             
             ScrollView {
                 VStack(alignment: .leading) {
-                    ForEach(sessions, id: \..self) { session in
-                        HStack {
-                            Text(session)
-                                .font(.subheadline)
-                            Spacer()
-                            if let status = room.availability[session] {
-                                Text(status)
-                                    .foregroundColor(status == "Available" ? .green : (status == "Occupied" ? .red : .orange))
-                                    .padding(.horizontal, 10)
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(5)
-                                    .onTapGesture {
-                                        if status == "Available" {
-                                            selectedSession = session
-                                        }
-                                    }
-                            }
-                        }
-                        .padding()
-                        .background(selectedSession == session ? Color.blue.opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
+                    ForEach(availability.keys.sorted(), id: \.self) { session in
+                    let isAvailable = availability[session] ?? false
+                    HStack {
+                        Text(session)
+                            .font(.subheadline)
+                        Spacer()
+                        Text(isAvailable ? "Available" : "Unavailable")
+                            .foregroundColor(isAvailable ? .green : .red)
+                            .padding(.horizontal, 10)
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(5)
                     }
+                    .onTapGesture {
+                        if isAvailable {
+                            selectedSession = session
+                        }
+                    }
+                    .padding()
+                    .background(selectedSession == session ? Color.blue.opacity(0.2) : Color.clear)
+                    .cornerRadius(10)
+                }
                 }
                 .padding(.horizontal)
             }
@@ -149,6 +153,7 @@ struct sheetBookMe: View {
     }
 }
 
-#Preview {
-    sheetBookMe(roomName: "Collab Room 1", roomImage: "Collab1")
-}
+//#Preview {
+//    BookFormView(collabRoom: CollabRoomModel)
+//        .modelContainer(SampleData.shared.modelContainer)
+//}
