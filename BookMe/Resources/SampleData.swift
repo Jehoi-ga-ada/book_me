@@ -28,7 +28,7 @@ class SampleData {
             CollabRoomModel.self,
             PersonModel.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
 
 
         do {
