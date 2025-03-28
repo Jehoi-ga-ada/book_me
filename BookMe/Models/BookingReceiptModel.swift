@@ -23,6 +23,10 @@ class BookingReceiptModel: Identifiable{
         self.session = session
         self.bookedBy = bookedBy
         self.pin = pin
+        
+        // Link this booking with the corresponding collab room and person.
+        collab.bookings.append(self)
+        bookedBy.bookings.append(self)
     }
     
     static let sampleData = BookingReceiptData.createDummyBookingReceipts()

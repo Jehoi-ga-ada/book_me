@@ -13,6 +13,9 @@ class PersonModel: Identifiable {
     var name: String
     var totalBooked: Int
     
+    // Relationship: list of bookings for this person
+    var bookings: [BookingReceiptModel] = []
+    
     init(name: String, totalBooked: Int) {
         self.name = name
         self.totalBooked = totalBooked
