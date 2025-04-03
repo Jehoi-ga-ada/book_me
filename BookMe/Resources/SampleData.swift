@@ -43,9 +43,6 @@ class SampleData {
     }
     
     private func insertSampleData() {
-        for BookingReceipt in BookingReceiptModel.sampleData {
-            context.insert(BookingReceipt)
-        }
         
         for CollabRoom in CollabRoomModel.sampleData {
             context.insert(CollabRoom)
@@ -54,5 +51,10 @@ class SampleData {
         for Person in PersonModel.sampleData {
             context.insert(Person)
         }
+        
+        for BookingReceipt in BookingReceiptModel.sampleData {
+            context.insert(BookingReceipt)
+        }
+        
     }
 }
