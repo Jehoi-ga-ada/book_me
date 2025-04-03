@@ -9,7 +9,7 @@ import Foundation
 
 final class BookingReceiptData {
     static func createDummyBookingReceipts() -> [BookingReceiptModel] {
-        var session: [String] {
+        let session: [String] =
             [
                 "08:45 - 09:55",
                 "10:10 - 11:20",
@@ -18,15 +18,6 @@ final class BookingReceiptData {
                 "14:25 - 15:35",
                 "15:50 - 17:00"
             ]
-        }
-        
-//        var dates: [Date] {
-//            let calendar = Calendar.current
-//            let startDate = calendar.date(from: DateComponents(year: 2000, month: 1, day: 1))!
-//            let endDate = calendar.date(from: DateComponents(year: 2030, month: 1, day: 1))!
-//            
-//            return (0..<5).map { _ in Date.random(between: startDate, and: endDate) }
-//        }
         
         var dates = [Date]()
         for dayOffset in 0..<5 {
@@ -35,11 +26,9 @@ final class BookingReceiptData {
             }
         }
         
-        var bookedBy: [PersonModel] {
-            PersonData.generateFivePerson()
-        }
+        let bookedBy: [PersonModel] = PersonModel.sampleData
         
-        let collabRooms: [CollabRoomModel] = CollabRoomData.generateCollabRooms()
+        let collabRooms: [CollabRoomModel] = CollabRoomModel.sampleData
         
         var pin: [String] {
             [
