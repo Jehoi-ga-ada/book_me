@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct MapView: View {
+    @Environment(\.modelContext) private var context
+
     let backgroundGradient = LinearGradient(
         colors: [Color("PrimeColor", bundle: .main), Color("SecondColor", bundle: .main)],
         startPoint: .top,
@@ -20,7 +22,7 @@ struct MapView: View {
     let minimumZoomScale: CGFloat = 1.0
     let maximumZoomScale: CGFloat = 3.0
     
-    @State private var showingBottomSheet: Bool = false
+    @State private var showingBottomSheet: Bool = true
     @State private var showingBookingForm: Bool = false
     @State private var bottomSheetHeight: PresentationDetent = .height(64)
     
@@ -112,10 +114,7 @@ struct MapView: View {
                         CollabRoomPinView(
                             collabRoom: collabRoom,
                             scale: mapScale / 3 * magnifyBy
-                        ) { tappedRoom in
-//                            focusOnPin(tappedRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
-                            focusAndBook(collabRoom: tappedRoom, geometry: geometry)
-                            print("Pin point pressed! \(tappedRoom.name)")
+                        ) {                             focusAndBook(collabRoom: collabRoom, geometry: geometry)
                         }
                     }
                 }
@@ -140,9 +139,6 @@ struct MapView: View {
             }
             .gesture(drag(for: geometry).simultaneously(with: magnification))
             .ignoresSafeArea()
-            .onAppear() {
-                showingBottomSheet = true
-            }
             .sheet(isPresented: $showingBottomSheet) {
                 HistoryViewAdapter(
                     focusOnPinFunction: { pin, geo in
@@ -160,12 +156,17 @@ struct MapView: View {
             .sheet(isPresented: $showingBookingForm, onDismiss: {
                 showingBottomSheet = true
             }) {
-                BookFormView(collabRoom: selectedCollabRoom!)
-                    .presentationDetents([.medium, .large])
-                    .presentationBackgroundInteraction(.enabled(upThrough: .large))
-                    .presentationBackground {
-                        Color.dark
-                    }
+                if let room = selectedCollabRoom {
+                    BookFormView(collabRoom: room)
+                        .presentationDetents([.medium, .large])
+                        .presentationBackgroundInteraction(.enabled(upThrough: .large))
+                        .presentationBackground {
+                            Color.dark
+                        }
+                } else {
+                    // Fallback view or EmptyView to avoid crashing
+                    EmptyView()
+                }
             }
         }
     }
