@@ -15,13 +15,13 @@ struct CollabRoomPinView: View {
     let scale: CGFloat
     
     /// A closure the child can call when the user taps the pin.
-    let onTap: (CollabRoomModel) -> Void
+    let onTap: () -> Void
     
     var body: some View {
         VStack {
             // Label button
             Button(action: {
-                onTap(collabRoom)
+                onTap()
             }) {
                 Text(collabRoom.name)
                     .font(.title.bold())
@@ -34,7 +34,7 @@ struct CollabRoomPinView: View {
             
             // Pin image button
             Button(action: {
-                onTap(collabRoom)
+                onTap()
             }) {
                 Image("pin_point")
                     .resizable()
