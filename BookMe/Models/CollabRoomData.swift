@@ -51,25 +51,19 @@ final class CollabRoomData {
 //            ]
 //        }
         
-        var images: [[String]] {
+        let images: [String] =
             [
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
+                "preview_1",
+                "preview_2",
+                "preview_3",
             ]
-        }
         
         var collabRooms: [CollabRoomModel] = []
         for i in 0..<names.count {
             collabRooms.append(CollabRoomModel(name: names[i],
                                           pinPointsLocation: pinPointsLocation[i],
                                           pinPointsZoomLocation: pinPointsZoomLocation[i],
-                                               imagePreviews: images[i]))
+                                               imagePreviews: images))
         }
         return collabRooms
     }

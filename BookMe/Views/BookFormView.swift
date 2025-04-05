@@ -21,7 +21,6 @@ struct BookFormView: View {
     @State private var userName: String = ""
     @State private var selectedDate = Date()
     @State private var selectedSession: String?
-    @State private var isImagePreviewPresented = false
     @State private var isBookingConfirmed = false
     @State private var filteredUserNames: [String] = []
     
@@ -29,127 +28,112 @@ struct BookFormView: View {
         collabRoom.availableSessions(on: selectedDate)
     }
     
-    let sessions = [
-        "08:45 - 09:55", "10:10 - 11:20", "11:35 - 12:45",
-        "13:00 - 14:10", "14:25 - 15:35", "15:50 - 17:00"
-    ]
-    
-    let userNames = ["Abdul Rahman", "Abdul Karim", "Abdullah Yusuf", "Aisyah Putri", "Budi Santoso"]
-    
-    @State private var room = Room(name: "Collab Room 1", image: "Collab1", availability: [
-        "08:45 - 09:55": "Available", "10:10 - 11:20": "Occupied",
-        "11:35 - 12:45": "Available", "13:00 - 14:10": "Maintenance",
-        "14:25 - 15:35": "Available", "15:50 - 17:00": "Occupied"
-    ])
+    @State private var isImagePreviewPresented = false
+    @State private var selectedIndex = 0
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("Collab Room \(collabRoom.name)")
-                    .font(.title)
+        NavigationView {
+            VStack {
+                HStack {
+                    Text("Collab Room \(collabRoom.name)")
+                        .font(.title)
+                        .bold()
+                        .padding()
+                    Spacer()
+                    DatePicker("", selection: $selectedDate, displayedComponents: [.date])
+                        .labelsHidden()
+                        .padding()
+                }
+                
+                // Image Preview
+                HStack{
+                    ForEach(collabRoom.imagePreviews.indices, id: \.self){ idx in
+                        Image(collabRoom.imagePreviews[idx])
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 80)
+                            .clipped()
+                            .onTapGesture {
+                                // On tap, record the index and present the sheet
+                                selectedIndex = idx
+                                isImagePreviewPresented.toggle()
+                            }
+                    }
+                }
+                .sheet(isPresented: $isImagePreviewPresented) {
+                    ImagePagerView(images:collabRoom.imagePreviews, currentIndex: $selectedIndex)
+                }
+                .padding()
+                
+                
+                NavigationLink(destination: SelectNameView()){
+                    HStack{
+                        Text("Select Name")
+                            .font(.title3)
+                            .bold()
+                    }
+                }
+
+                Divider().padding(.vertical)
+                
+                Text("Select a Session")
+                    .font(.title2)
                     .bold()
-                    .padding()
-                Spacer()
-                DatePicker("", selection: $selectedDate, displayedComponents: [.date])
-                    .labelsHidden()
-                    .padding()
-            }
-            
-            // Image Preview
-            Button(action: {
-                isImagePreviewPresented.toggle()
-            }) {
-                Image(room.image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 150)
-                    .cornerRadius(10)
-                    .padding()
-            }
-            .sheet(isPresented: $isImagePreviewPresented) {
-                Image(room.image)
-                    .resizable()
-                    .scaledToFit()
-                    .padding()
-            }
-            
-            // Autocomplete User Name
-            TextField("Enter your name", text: $userName, onEditingChanged: { _ in
-                filteredUserNames = userNames.filter { $0.lowercased().contains(userName.lowercased()) }
-            })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.horizontal)
-            
-            if !filteredUserNames.isEmpty {
-                List(filteredUserNames, id: \..self) { name in
-                    Text(name)
-                        .onTapGesture {
-                            userName = name
-                            filteredUserNames = []
-                        }
-                }
-                .frame(height: 100)
-            }
-            
-            Divider().padding(.vertical)
-            
-            Text("Select a Session")
-                .font(.title2)
-                .bold()
-                .padding(.bottom, 5)
-            
-            ScrollView {
-                VStack(alignment: .leading) {
-                    ForEach(availability.keys.sorted(), id: \.self) { session in
-                    let isAvailable = availability[session] ?? false
-                    HStack {
-                        Text(session)
-                            .font(.subheadline)
-                        Spacer()
-                        Text(isAvailable ? "Available" : "Unavailable")
-                            .foregroundColor(isAvailable ? .green : .red)
-                            .padding(.horizontal, 10)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(5)
-                    }
-                    .onTapGesture {
-                        if isAvailable {
-                            selectedSession = session
+                    .padding(.bottom, 5)
+                
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        ForEach(availability.keys.sorted(), id: \.self) { session in
+                            let isAvailable = availability[session] ?? false
+                            HStack {
+                                Text(session)
+                                    .font(.subheadline)
+                                Spacer()
+                                Text(isAvailable ? "Available" : "Unavailable")
+                                    .foregroundColor(isAvailable ? .green : .red)
+                                    .padding(.horizontal, 10)
+                                    .background(Color.gray.opacity(0.2))
+                                    .cornerRadius(5)
+                            }
+                            .onTapGesture {
+                                if isAvailable {
+                                    selectedSession = session
+                                }
+                            }
+                            .padding()
+                            .background(selectedSession == session ? Color.blue.opacity(0.2) : Color.clear)
+                            .cornerRadius(10)
                         }
                     }
-                    .padding()
-                    .background(selectedSession == session ? Color.blue.opacity(0.2) : Color.clear)
-                    .cornerRadius(10)
-                }
-                }
-                .padding(.horizontal)
-            }
-            
-            Button(action: {
-                if selectedSession != nil {
-                    isBookingConfirmed.toggle()
-                }
-            }) {
-                Text("Book Room")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(selectedSession != nil ? Color.blue : Color.gray)
-                    .foregroundColor(.white)
-                    .font(.headline)
-                    .cornerRadius(10)
                     .padding(.horizontal)
+                }
+                
+                Button(action: {
+                    if selectedSession != nil {
+                        isBookingConfirmed.toggle()
+                    }
+                }) {
+                    Text("Book Room")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(selectedSession != nil ? Color.blue : Color.gray)
+                        .foregroundColor(.white)
+                        .font(.headline)
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                }
+                .disabled(selectedSession == nil)
+                .padding(.top, 10)
+                .alert(isPresented: $isBookingConfirmed) {
+                    Alert(
+                        title: Text("Booking Confirmed"),
+                        message: Text("You have booked Collab Room \(collabRoom.name) at \(selectedSession!) on \(selectedDate, style: .date)"),
+                        dismissButton: .default(Text("OK"))
+                    )
+                }
             }
-            .disabled(selectedSession == nil)
-            .padding(.top, 10)
-            .alert(isPresented: $isBookingConfirmed) {
-                Alert(
-                    title: Text("Booking Confirmed"),
-                    message: Text("You have booked \(room.name) at \(selectedSession!) on \(selectedDate, style: .date)"),
-                    dismissButton: .default(Text("OK"))
-                )
-            }
+            .padding()
         }
-        .padding()
     }
 }
 
