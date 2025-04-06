@@ -29,5 +29,11 @@ class BookingReceiptModel: Identifiable{
         bookedBy.bookings.append(self)
     }
     
+    // Helper validation function for the PIN.
+    // The PIN must have exactly 4 characters and be numeric.
+    static func isValidPin(_ pin: String) -> Bool {
+        return pin.count == 4 && pin.allSatisfy { $0.isNumber }
+    }
+    
     static let sampleData = BookingReceiptData.createDummyBookingReceipts()
 }
