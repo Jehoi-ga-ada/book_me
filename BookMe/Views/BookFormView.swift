@@ -11,10 +11,13 @@ import SwiftData
 struct BookFormView: View {
     var collabRoom: CollabRoomModel
     
+    @State private var alertController = AlertViewController()
+    
     @State private var userName: String = ""
     @State private var selectedDate = Date()
     @State private var selectedSession: String?
     @State private var isBookingConfirmed = false
+    @State private var isPinAlertPresented = false
     // Hold the selected PersonModel from SelectNameView
     @State private var selectedPerson: PersonModel?
     
@@ -105,6 +108,7 @@ struct BookFormView: View {
                                     .background(Color.gray.opacity(0.2))
                                     .cornerRadius(5)
                             }
+                            .contentShape(Rectangle())
                             .onTapGesture {
                                 if isAvailable {
                                     selectedSession = session
@@ -118,72 +122,76 @@ struct BookFormView: View {
                     .padding(.horizontal)
                 }
                 
-                // PIN input field section
-                VStack(alignment: .center, spacing: 5) {
-                    Text("Enter a 4-digit PIN")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    SecureField("PIN", text: $inputPin)
+                // book button
+                Button("Book Room") {
+                    isPinAlertPresented = true
+                }
+                .disabled(selectedSession == nil || selectedPerson == nil)
+                .alert("Enter PIN", isPresented: $isPinAlertPresented) {
+                    SecureField("Enter a 4-digit PIN", text: $inputPin)
                         .keyboardType(.numberPad)
-                        .multilineTextAlignment(.center)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .frame(maxWidth: 200)
-                        .onChange(of: inputPin) { newValue in
+                        .onChange(of: inputPin) { oldValue, newValue in
                             if newValue.count > 4 {
-                                inputPin = String(newValue.prefix(4))
+                                inputPin = String(oldValue.prefix(4))
                             }
                         }
-                }
-                .padding(.vertical)
-                
-                // The button label changes based on whether this is a new booking or an update.
-                Button(action: bookOrUpdateBooking) {
-                    Text(bookingReceipt == nil ? "Book Room" : "Update PIN")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background((selectedSession != nil && selectedPerson != nil && !inputPin.isEmpty) ? Color.blue : Color.gray)
-                        .foregroundColor(.white)
-                        .font(.headline)
-                        .cornerRadius(10)
-                        .padding(.horizontal)
-                }
-                .disabled(selectedSession == nil || selectedPerson == nil || inputPin.isEmpty)
-                .padding(.top, 10)
-                .alert(isPresented: $isBookingConfirmed) {
-                    Alert(
-                        title: Text(bookingReceipt == nil ? "Booking Confirmed" : "PIN Updated"),
-                        message: Text("Your booking for Collab Room \(collabRoom.name) at \(selectedSession ?? "") on \(selectedDate, style: .date) now has PIN \(inputPin)"),
-                        dismissButton: .default(Text("OK"))
-                    )
+                    Button("Confirm") {
+                        bookRoom()
+                    }
+                    Button("Cancel", role: .cancel) {
+                        inputPin = ""
+                    }
                 }
             }
         }
+        .withAlertController(alertController)
     }
     
-    private func bookOrUpdateBooking() {
-        // Ensure both a session and a person have been selected.
-        guard let session = selectedSession, let person = selectedPerson else {
+    // MARK: Booking + Success alert logic
+    private func bookRoom() {
+        guard let session = selectedSession, let person = selectedPerson, BookingReceiptModel.isValidPin(inputPin) else {
+            // Handle invalid input or show an error message
+            alertController.showErrorAlert(
+                title: "Invalid Input",
+                message: "Please ensure all fields are correctly filled.",
+                retryButtonText: "Retry",
+                cancelButtonText: "Cancel",
+                retryAction: {
+                    // Code to retry booking
+                },
+                cancelAction: {
+                    // Code to handle cancellation
+                }
+            )
             return
         }
         
-        // Validate the custom PIN using the helper.
-        guard BookingReceiptModel.isValidPin(inputPin) else {
-            // In a real app, consider displaying an error message here.
-            return
+        let newReceipt = BookingReceiptModel(collab: collabRoom, date: selectedDate, session: session, bookedBy: person, pin: inputPin)
+        context.insert(newReceipt)
+        do {
+            try context.save()
+            isBookingConfirmed = true
+            inputPin = ""
+            selectedSession = nil
+            selectedPerson = nil
+            alertController.showBasicAlert(
+                title: "Booking Confirmed",
+                message: "Your booking has been successfully recorded."
+            )
+        } catch {
+            alertController.showErrorAlert(
+                title: "Booking Failed",
+                message: "An error occurred while saving your booking.",
+                retryButtonText: "Retry",
+                cancelButtonText: "Cancel",
+                retryAction: {
+                    bookRoom()
+                },
+                cancelAction: {
+                    // Code to handle cancellation
+                }
+            )
         }
-        
-        // If a booking already exists, update its PIN.
-        if let existingReceipt = bookingReceipt {
-            existingReceipt.pin = inputPin
-        } else {
-            // Create a new booking receipt using the user's input PIN.
-            let newReceipt = BookingReceiptModel(collab: collabRoom, date: selectedDate, session: session, bookedBy: person, pin: inputPin)
-            context.insert(newReceipt)
-            bookingReceipt = newReceipt
-            try? context.save()
-        }
-        
-        isBookingConfirmed = true
     }
 }
 

@@ -34,7 +34,7 @@ struct ZoomableImage: View {
             )
             // Reset zoom scale when this image becomes the current image
             // TODO: Harus update codenya karena method kyk gini udh deprecated
-            .onChange(of: currentIndex) { newValue in
+            .onChange(of: currentIndex) { _, newValue in
                 if newValue == index {
                     scale = 1.0
                     lastScale = 1.0
