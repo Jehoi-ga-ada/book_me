@@ -8,13 +8,6 @@
 import SwiftUI
 import SwiftData
 
-struct Room: Identifiable {
-    let id = UUID()
-    let name: String
-    let image: String
-    var availability: [String: String] // Key: session, Value: status
-}
-
 struct BookFormView: View {
     var collabRoom: CollabRoomModel
     
@@ -22,7 +15,15 @@ struct BookFormView: View {
     @State private var selectedDate = Date()
     @State private var selectedSession: String?
     @State private var isBookingConfirmed = false
-    @State private var filteredUserNames: [String] = []
+    // Hold the selected PersonModel from SelectNameView
+    @State private var selectedPerson: PersonModel?
+    
+    // New state to capture the user's input for a custom PIN.
+    @State private var inputPin: String = ""
+    // Keep a reference to the booking receipt if one has been created.
+    @State private var bookingReceipt: BookingReceiptModel?
+    
+    @Environment(\.modelContext) private var context
     
     var availability: [String: Bool] {
         collabRoom.availableSessions(on: selectedDate)
@@ -66,14 +67,23 @@ struct BookFormView: View {
                 .padding()
                 
                 
-                NavigationLink(destination: SelectNameView()){
-                    HStack{
-                        Text("Select Name")
+                // NavigationLink to SelectNameView with a callback
+                NavigationLink(destination: SelectNameView { person in
+                    self.selectedPerson = person
+                }) {
+                    HStack {
+                        Text(selectedPerson?.name ?? "Select Name")
                             .font(.title3)
                             .bold()
+                        Spacer()
+                        Image(systemName: "chevron.right")
                     }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
                 }
-
+                .padding(.horizontal)
+                
                 Divider().padding(.vertical)
                 
                 Text("Select a Session")
@@ -108,32 +118,72 @@ struct BookFormView: View {
                     .padding(.horizontal)
                 }
                 
-                Button(action: {
-                    if selectedSession != nil {
-                        isBookingConfirmed.toggle()
-                    }
-                }) {
-                    Text("Book Room")
+                // PIN input field section
+                VStack(alignment: .center, spacing: 5) {
+                    Text("Enter a 4-digit PIN")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    SecureField("PIN", text: $inputPin)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.center)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(maxWidth: 200)
+                        .onChange(of: inputPin) { newValue in
+                            if newValue.count > 4 {
+                                inputPin = String(newValue.prefix(4))
+                            }
+                        }
+                }
+                .padding(.vertical)
+                
+                // The button label changes based on whether this is a new booking or an update.
+                Button(action: bookOrUpdateBooking) {
+                    Text(bookingReceipt == nil ? "Book Room" : "Update PIN")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(selectedSession != nil ? Color.blue : Color.gray)
+                        .background((selectedSession != nil && selectedPerson != nil && !inputPin.isEmpty) ? Color.blue : Color.gray)
                         .foregroundColor(.white)
                         .font(.headline)
                         .cornerRadius(10)
                         .padding(.horizontal)
                 }
-                .disabled(selectedSession == nil)
+                .disabled(selectedSession == nil || selectedPerson == nil || inputPin.isEmpty)
                 .padding(.top, 10)
                 .alert(isPresented: $isBookingConfirmed) {
                     Alert(
-                        title: Text("Booking Confirmed"),
-                        message: Text("You have booked Collab Room \(collabRoom.name) at \(selectedSession!) on \(selectedDate, style: .date)"),
+                        title: Text(bookingReceipt == nil ? "Booking Confirmed" : "PIN Updated"),
+                        message: Text("Your booking for Collab Room \(collabRoom.name) at \(selectedSession ?? "") on \(selectedDate, style: .date) now has PIN \(inputPin)"),
                         dismissButton: .default(Text("OK"))
                     )
                 }
             }
-            .padding()
         }
+    }
+    
+    private func bookOrUpdateBooking() {
+        // Ensure both a session and a person have been selected.
+        guard let session = selectedSession, let person = selectedPerson else {
+            return
+        }
+        
+        // Validate the custom PIN using the helper.
+        guard BookingReceiptModel.isValidPin(inputPin) else {
+            // In a real app, consider displaying an error message here.
+            return
+        }
+        
+        // If a booking already exists, update its PIN.
+        if let existingReceipt = bookingReceipt {
+            existingReceipt.pin = inputPin
+        } else {
+            // Create a new booking receipt using the user's input PIN.
+            let newReceipt = BookingReceiptModel(collab: collabRoom, date: selectedDate, session: session, bookedBy: person, pin: inputPin)
+            context.insert(newReceipt)
+            bookingReceipt = newReceipt
+            try? context.save()
+        }
+        
+        isBookingConfirmed = true
     }
 }
 
