@@ -16,6 +16,7 @@ struct BookMeApp: App {
             MapView()
                 .preferredColorScheme(.dark)  // Force Dark Mode
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .modelContainer(SampleData.shared.modelContainer)
         }
     }
 }
