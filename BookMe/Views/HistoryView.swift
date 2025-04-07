@@ -72,6 +72,8 @@ struct HistoryCardWrapper: View {
     var onFocusOnPin: ((CGPoint, GeometryProxy) -> Void)?
     var geometry: GeometryProxy?
     
+    @State private var showingEditSheet = false
+    
     // Computed binding for the onFocus state
     private var onFocusBinding: Binding<Bool> {
         Binding<Bool>(
@@ -96,14 +98,15 @@ struct HistoryCardWrapper: View {
                 deleteItem(model)
             },
             onEdit: {
-                deleteItem(model)
+                showingEditSheet = true
             }
         )
+        .sheet(isPresented: $showingEditSheet) {
+            EditBookingView(bookingReceipt: model)
+        }
     }
     
     private func handleCardClick(model: BookingReceiptModel) {
-
-        
         if let onFocusOnPin = onFocusOnPin, let geometry = geometry {
             onFocusOnPin(model.collab.pinPointsZoomLocation.cgPoint, geometry)
         }
@@ -114,7 +117,6 @@ struct HistoryCardWrapper: View {
         try? context.save() // Save changes
     }
 }
-
 #Preview {
     HistoryView()
         .modelContainer(SampleData.shared.modelContainer)
