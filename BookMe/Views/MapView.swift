@@ -156,10 +156,11 @@ struct MapView: View {
             .sheet(item: $selectedCollabRoom, onDismiss: {
                 showingBookingForm = false
                 showingBottomSheet = true
-            }) { room in
+            })
+            { room in
                 BookFormView(collabRoom: room)
                     .presentationDetents([.medium, .large])
-                    .presentationBackgroundInteraction(.enabled(upThrough: .large))
+    
                     .presentationBackground {
                         Color.dark
                     }
