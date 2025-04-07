@@ -51,33 +51,38 @@ struct HistoryCard: View {
                 }
                 Spacer()
                 HStack {
-                    Button("Edit") {
+                    Button {
                         currentAction = .edit
                         showPinPrompt()
+                    } label: {
+                        Text("Edit")
+                            .font(.headline)
+                            .bold()
+                            .frame(width: 60)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 36)
+                            .padding(.vertical, 8)
+                            .background(Color.orange)
+                            .cornerRadius(999)
                     }
-                    .font(.headline)
-                    .bold()
-                    .frame(width: 60)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 36)
-                    .padding(.vertical, 8)
-                    .background(Color.orange)
-                    .cornerRadius(999)
+                   
                     
                     Spacer()
                     
-                    Button("Delete") {
+                    Button() {
                         currentAction = .delete
                         showPinPrompt()
+                    } label: {
+                        Text ("Delete") .font(.headline)
+                            .bold()
+                            .frame(width: 60)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 36)
+                            .padding(.vertical, 8)
+                            .background(Color.red)
+                            .cornerRadius(999)
                     }
-                    .font(.headline)
-                    .bold()
-                    .frame(width: 60)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 36)
-                    .padding(.vertical, 8)
-                    .background(Color.red)
-                    .cornerRadius(999)
+                   
                 }
                 .padding(.top, 8)
             }
