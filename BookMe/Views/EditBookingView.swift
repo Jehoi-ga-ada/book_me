@@ -17,9 +17,9 @@ struct EditBookingView: View {
     @State private var selectedDate = Date()
     @State private var selectedSession: String?
     @State private var selectedPerson: PersonModel?
-    @State private var isPinVerificationPresented = false
-    @State private var inputPin: String = ""
-    @State private var isPinVerified = false
+    
+    // Added a state to track if form is valid
+    @State private var isFormValid = true
     
     var availability: [String: Bool] {
         var availableSessions = bookingReceipt.collab.availableSessions(on: selectedDate)
@@ -38,61 +38,41 @@ struct EditBookingView: View {
     }
     
     var body: some View {
-        VStack {
+        NavigationView {
+            VStack {
                 editFormView
-        }
-        .onAppear {
-            // Show PIN verification when view appears
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-               // isPinVerificationPresented = true
             }
-        }
-       
-    }
-    
-    // PIN verification view
-    private var pinVerificationView: some View {
-        VStack {
-            Text("Verifying PIN...")
-                .font(.title)
-                .padding()
-            
-            Button("Enter PIN Again") {
-                isPinVerificationPresented = true
-            }
-            .padding()
-            
-            Button("Cancel") {
+            .navigationBarTitle("Edit Booking", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Cancel") {
                 dismiss()
-            }
-            .foregroundColor(.red)
-            .padding()
+            })
+            .withAlertController(alertController)
         }
     }
     
     // Edit form view
     private var editFormView: some View {
         ScrollView {
-            VStack {
+            VStack(alignment: .leading, spacing: 20) {
                 HStack {
-                    Text("Edit Booking: Booking Room \(bookingReceipt.collab.name)")
-                        .font(.title)
+                    Text("Booking Room \(bookingReceipt.collab.name)")
+                        .font(.title2)
                         .bold()
-                        .padding()
                     Spacer()
                     DatePicker("", selection: $selectedDate, displayedComponents: [.date])
                         .labelsHidden()
-                        .padding()
                 }
+                .padding(.horizontal)
                 
                 // Person Selection
-                NavigationLink(destination: SelectNameView { person in
-                    self.selectedPerson = person
-                }) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Booked By").font(.headline)
+                    
+                   
                     HStack {
-                        Text(selectedPerson?.name ?? "Select Name").foregroundColor(.prime)
-                            .font(.title3)
-                            .bold()
+                        Text(selectedPerson?.name ?? "Select Name")
+                            .foregroundColor(.prime)
+                            .font(.body)
                         Spacer()
                     }
                     .padding()
@@ -101,67 +81,86 @@ struct EditBookingView: View {
                 }
                 .padding(.horizontal)
                 
-                Divider().padding(.vertical)
-                
-                Text("Select a Session")
-                    .font(.title2)
-                    .bold()
-                    .padding(.bottom, 5)
+                Divider()
                 
                 // Session selection
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Select a Session")
+                        .font(.headline)
+                        .padding(.horizontal)
+                    
                     ForEach(availability.keys.sorted(), id: \.self) { session in
                         let isAvailable = availability[session] ?? false
-                        HStack {
-                            Text(session)
-                                .font(.subheadline)
-                            Spacer()
-                            Text(isAvailable ? "Available" : "Unavailable")
-                                .foregroundColor(isAvailable ? .green : .red)
-                                .padding(.horizontal, 10)
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(5)
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
+                        
+                        // Button now wraps the entire content with contentShape
+                        Button(action: {
                             if isAvailable {
                                 selectedSession = session
+                                // Check if form is valid when session changes
+                                isFormValid = selectedPerson != nil
                             }
+                        }) {
+                            HStack {
+                                Text(session)
+                                    .font(.subheadline)
+                                Spacer()
+                                Text(isAvailable ? "Available" : "Unavailable")
+                                    .foregroundColor(isAvailable ? .green : .red)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.gray.opacity(0.2))
+                                    .cornerRadius(4)
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                selectedSession == session
+                                ? Color.blue.opacity(0.2)
+                                : Color.clear
+                            )
+                            .cornerRadius(8)
+                            // Make the entire area tappable
+                            .contentShape(Rectangle())
                         }
-                        .padding()
-                        .background(selectedSession == session ? Color.blue.opacity(0.2) : Color.clear)
-                        .cornerRadius(10)
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(!isAvailable)
+                        // Apply opacity to visually indicate disabled status
+                        .opacity(isAvailable ? 1.0 : 0.6)
+                        .padding(.horizontal)
                     }
                 }
-                .padding(.horizontal)
-                // Update button
-                Spacer()
-
-                Button(action: {
-                    updateBooking()
-                }) {
-                    Text("Update Booking")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(
-                            (selectedSession == nil || selectedPerson == nil) ?
-                                Color.gray.opacity(0.5) :
-                                    .prime
-                        )
-                        .cornerRadius(10)
-                }
-                .disabled(selectedSession == nil || selectedPerson == nil)
-                .padding(.horizontal)
-                .padding(.vertical, 16)
                 
-                Button("Cancel") {
-                    dismiss()
+                Spacer(minLength: 40)
+                
+                // Update button
+                VStack {
+                    Button(action: {
+                        updateBooking()
+                    }) {
+                        Text("Update Booking")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                (selectedSession == nil || selectedPerson == nil)
+                                ? Color.gray.opacity(0.5)
+                                : Color.prime
+                            )
+                            .cornerRadius(10)
+                    }
+                    .disabled(selectedSession == nil || selectedPerson == nil)
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
                 }
-                .foregroundColor(.red)
             }
+            .padding(.vertical)
+        }
+        .onAppear {
+            // Ensure we validate form state when the view appears
+            isFormValid = selectedSession != nil && selectedPerson != nil
         }
     }
     
@@ -192,7 +191,6 @@ struct EditBookingView: View {
                 }
             )
         } catch {
-
             alertController.showConfirmationAlert(
                 title: "Update Failed",
                 message: "An error occurred while updating your booking.",

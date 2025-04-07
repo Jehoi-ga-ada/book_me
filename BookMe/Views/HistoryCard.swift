@@ -11,21 +11,20 @@ struct HistoryCard: View {
     var model: BookingReceiptModel
     @Binding var onFocus: Bool
     var onCardClick: () -> Void
-    // onDelete is now called after the deletion success alert is dismissed.
     var onDelete: () -> Void
     var onEdit: () -> Void
     
-    // States for showing the PIN validation alerts.
-    @State private var isPinDeleteAlertPresented = false
-    @State private var isPinEditAlertPresented = false
     @State private var inputPin: String = ""
+    @State private var isPinPromptShowing = false
+    @State private var currentAction: PinAction = .edit
     
-    // Enum to track the deletion alert outcome.
-    enum DeletionAlertType: Identifiable {
-        case success, wrongPassword
-        var id: Int { hashValue }
+    // Keep track of which action we're performing
+    enum PinAction {
+        case edit, delete
     }
-    @State private var deletionAlertType: DeletionAlertType?
+    
+    // Alert controller for all alerts
+    @State private var alertController = AlertViewController()
     
     var body: some View {
         Button(action: {
@@ -53,7 +52,8 @@ struct HistoryCard: View {
                 Spacer()
                 HStack {
                     Button("Edit") {
-                        isPinEditAlertPresented = true
+                        currentAction = .edit
+                        showPinPrompt()
                     }
                     .font(.headline)
                     .bold()
@@ -63,19 +63,12 @@ struct HistoryCard: View {
                     .padding(.vertical, 8)
                     .background(Color.orange)
                     .cornerRadius(999)
-                    // Present ValidatePassView for editing.
-                    .alert("Enter your PIN", isPresented: $isPinEditAlertPresented) {
-                        ValidatePassView(correctPin: model.pin, onCompletion: { success in
-                            if success {
-                                onEdit()
-                            }
-                        }, inputPin: $inputPin)
-                    }
                     
                     Spacer()
                     
                     Button("Delete") {
-                        isPinDeleteAlertPresented = true
+                        currentAction = .delete
+                        showPinPrompt()
                     }
                     .font(.headline)
                     .bold()
@@ -85,17 +78,6 @@ struct HistoryCard: View {
                     .padding(.vertical, 8)
                     .background(Color.red)
                     .cornerRadius(999)
-                    // Present ValidatePassView for deletion.
-                    .alert("Enter your PIN", isPresented: $isPinDeleteAlertPresented) {
-                        ValidatePassView(correctPin: model.pin, onCompletion: { success in
-                            if success {
-                                // Set the deletion alert to success.
-                                deletionAlertType = .success
-                            } else {
-                                deletionAlertType = .wrongPassword
-                            }
-                        }, inputPin: $inputPin)
-                    }
                 }
                 .padding(.top, 8)
             }
@@ -109,21 +91,66 @@ struct HistoryCard: View {
             .cornerRadius(12)
         }
         .buttonStyle(PlainButtonStyle())
-        // Alert for deletion outcome.
-        .alert(item: $deletionAlertType) { type in
-            switch type {
-            case .success:
-                // When dismissed, trigger onDelete.
-                return Alert(title: Text("Deleted"),
-                             message: Text("Booking has been deleted."),
-                             dismissButton: .default(Text("OK"), action: {
-                                onDelete()
-                             }))
-            case .wrongPassword:
-                return Alert(title: Text("Error"),
-                             message: Text("Incorrect PIN."),
-                             dismissButton: .default(Text("OK")))
+        .alert("Enter your PIN", isPresented: $isPinPromptShowing) {
+            SecureField("Enter a 4-digit PIN", text: $inputPin)
+                .keyboardType(.numberPad)
+                .onChange(of: inputPin) { oldValue, newValue in
+                    if newValue.count > 4 {
+                        inputPin = String(oldValue.prefix(4))
+                    }
+                }
+            Button("Confirm") {
+                validatePin()
+            }
+            Button("Cancel", role: .cancel) {
+                inputPin = ""
             }
         }
+        .withAlertController(alertController)
+    }
+    
+    // Show PIN prompt
+    private func showPinPrompt() {
+        isPinPromptShowing = true
+    }
+    
+    // Validate PIN and perform the appropriate action
+    private func validatePin() {
+        if inputPin == model.pin {
+            inputPin = ""
+            
+            // PIN is correct, perform the appropriate action
+            switch currentAction {
+            case .edit:
+                onEdit()
+            case .delete:
+                showDeletionConfirmation()
+            }
+        } else {
+            // PIN is incorrect, show error message
+            inputPin = ""
+            showIncorrectPinAlert()
+        }
+    }
+    
+    // Show incorrect PIN alert using AlertViewController
+    private func showIncorrectPinAlert() {
+        alertController.showBasicAlert(
+            title: "Error",
+            message: "Incorrect PIN.",
+            buttonText: "OK"
+        )
+    }
+    
+    // Show deletion confirmation using AlertViewController
+    private func showDeletionConfirmation() {
+        alertController.showBasicAlert(
+            title: "Deleted",
+            message: "Booking has been deleted.",
+            buttonText: "OK",
+            action: {
+                onDelete()
+            }
+        )
     }
 }
