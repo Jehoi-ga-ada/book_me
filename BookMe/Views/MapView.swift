@@ -26,6 +26,9 @@ struct MapView: View {
     @State private var showingBookingForm: Bool = false
     @State private var bottomSheetHeight: PresentationDetent = .height(64)
     
+    // New state to track the booking sheet detent
+    @State private var bookingSheetDetent: PresentationDetent = .medium
+    
     // MARK: - Gesture Motion
     var magnification: some Gesture {
         MagnifyGesture()
@@ -82,11 +85,18 @@ struct MapView: View {
     }
     
     private func focusAndBook(collabRoom: CollabRoomModel, geometry: GeometryProxy) {
+        // First set the room, then show the sheet
         selectedCollabRoom = collabRoom
         focusOnPin(collabRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
         
-        showingBookingForm = true
+        // Reset sheet detent to medium
+        bookingSheetDetent = .medium
+        
+        // Hide bottom sheet first
         showingBottomSheet = false
+        
+        // Show booking form only after we have set the selected room
+        showingBookingForm = true
     }
     
     // MARK: - Map View
@@ -114,7 +124,8 @@ struct MapView: View {
                         CollabRoomPinView(
                             collabRoom: collabRoom,
                             scale: mapScale / 3 * magnifyBy
-                        ) {                             focusAndBook(collabRoom: collabRoom, geometry: geometry)
+                        ) {
+                            focusAndBook(collabRoom: collabRoom, geometry: geometry)
                         }
                     }
                 }
@@ -153,12 +164,22 @@ struct MapView: View {
                     Color.dark
                 }
             }
-            .sheet(item: $selectedCollabRoom, onDismiss: {
+            // Only display the booking form sheet when we know the selected room exists
+            .onChange(of: showingBookingForm) { oldValue, newValue in
+                // If trying to show booking form but no room is selected, reset the state
+                if newValue && selectedCollabRoom == nil {
+                    showingBookingForm = false
+                    showingBottomSheet = true
+                }
+            }
+            .sheet(isPresented: $showingBookingForm, onDismiss: {
+                // Make sure to show bottom sheet when booking form is dismissed
                 showingBookingForm = false
                 showingBottomSheet = true
-            }) { room in
-                BookFormView(collabRoom: room)
-                    .presentationDetents([.medium, .large])
+            }) {
+                // Using a non-optional BookFormView since we ensure the room is set before showing the sheet
+                BookFormView(collabRoom: selectedCollabRoom!)
+                    .presentationDetents([.medium, .large], selection: $bookingSheetDetent)
                     .presentationBackgroundInteraction(.enabled(upThrough: .large))
                     .presentationBackground {
                         Color.dark
