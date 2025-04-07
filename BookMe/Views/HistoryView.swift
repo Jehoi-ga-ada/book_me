@@ -94,6 +94,9 @@ struct HistoryCardWrapper: View {
             },
             onDelete: {
                 deleteItem(model)
+            },
+            onEdit: {
+                deleteItem(model)
             }
         )
     }

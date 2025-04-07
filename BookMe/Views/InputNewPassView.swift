@@ -1,5 +1,5 @@
 //
-//  PinInputView.swift
+//  InputNewPassView.swift
 //  BookMe
 //
 //  Created by Jehoiada Wong on 07/04/25.
@@ -7,7 +7,7 @@
 import SwiftUI
 import SwiftData
 
-struct InputPassView: View {
+struct InputNewPassView: View {
     
     let onTap: () -> Void
     @Binding var inputPin: String

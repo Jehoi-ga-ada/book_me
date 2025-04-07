@@ -143,7 +143,7 @@ struct BookFormView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 16)
                 .alert("Enter PIN", isPresented: $isPinAlertPresented) {
-                    InputPassView(onTap: bookRoom, inputPin: $inputPin)
+                    InputNewPassView(onTap: bookRoom, inputPin: $inputPin)
                 }
             }
         }
