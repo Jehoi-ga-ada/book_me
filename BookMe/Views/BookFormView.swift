@@ -123,10 +123,25 @@ struct BookFormView: View {
                 }
                 
                 // book button
-                Button("Book Room") {
+                Button(action: {
                     isPinAlertPresented = true
+                }) {
+                    Text("Book Room")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            (selectedSession == nil || selectedPerson == nil) ?
+                                Color.gray.opacity(0.5) :
+                                    .prime
+                        )
+                        .cornerRadius(10)
                 }
                 .disabled(selectedSession == nil || selectedPerson == nil)
+                .padding(.horizontal)
+                .padding(.vertical, 16)
                 .alert("Enter PIN", isPresented: $isPinAlertPresented) {
                     SecureField("Enter a 4-digit PIN", text: $inputPin)
                         .keyboardType(.numberPad)
