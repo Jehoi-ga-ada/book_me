@@ -143,19 +143,7 @@ struct BookFormView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 16)
                 .alert("Enter PIN", isPresented: $isPinAlertPresented) {
-                    SecureField("Enter a 4-digit PIN", text: $inputPin)
-                        .keyboardType(.numberPad)
-                        .onChange(of: inputPin) { oldValue, newValue in
-                            if newValue.count > 4 {
-                                inputPin = String(oldValue.prefix(4))
-                            }
-                        }
-                    Button("Confirm") {
-                        bookRoom()
-                    }
-                    Button("Cancel", role: .cancel) {
-                        inputPin = ""
-                    }
+                    InputPassView(onTap: bookRoom, inputPin: $inputPin)
                 }
             }
         }

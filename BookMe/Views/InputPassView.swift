@@ -7,9 +7,10 @@
 import SwiftUI
 import SwiftData
 
-struct PinInputView: View {
+struct InputPassView: View {
     
-    
+    let onTap: () -> Void
+    @Binding var inputPin: String
     
     var body: some View {
         SecureField("Enter a 4-digit PIN", text: $inputPin)
@@ -20,7 +21,7 @@ struct PinInputView: View {
                 }
             }
         Button("Confirm") {
-            bookRoom()
+            onTap()
         }
         Button("Cancel", role: .cancel) {
             inputPin = ""
