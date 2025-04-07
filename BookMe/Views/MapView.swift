@@ -153,20 +153,16 @@ struct MapView: View {
                     Color.dark
                 }
             }
-            .sheet(isPresented: $showingBookingForm, onDismiss: {
+            .sheet(item: $selectedCollabRoom, onDismiss: {
+                showingBookingForm = false
                 showingBottomSheet = true
-            }) {
-                if let room = selectedCollabRoom {
-                    BookFormView(collabRoom: room)
-                        .presentationDetents([.medium, .large])
-                        .presentationBackgroundInteraction(.enabled(upThrough: .large))
-                        .presentationBackground {
-                            Color.dark
-                        }
-                } else {
-                    // Fallback view or EmptyView to avoid crashing
-                    EmptyView()
-                }
+            }) { room in
+                BookFormView(collabRoom: room)
+                    .presentationDetents([.medium, .large])
+                    .presentationBackgroundInteraction(.enabled(upThrough: .large))
+                    .presentationBackground {
+                        Color.dark
+                    }
             }
         }
     }
