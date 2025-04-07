@@ -75,11 +75,11 @@ struct BookFormView: View {
                     self.selectedPerson = person
                 }) {
                     HStack {
-                        Text(selectedPerson?.name ?? "Select Name")
+                        Text(selectedPerson?.name ?? "Select Name").foregroundColor(.prime)
                             .font(.title3)
                             .bold()
                         Spacer()
-                        Image(systemName: "chevron.right")
+                        Image(systemName: "chevron.right").foregroundColor(.prime)
                     }
                     .padding()
                     .background(Color.gray.opacity(0.1))
