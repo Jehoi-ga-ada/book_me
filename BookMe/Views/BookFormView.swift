@@ -131,7 +131,7 @@ struct BookFormView: View {
                             .cornerRadius(10)
                         }
                     }
-//                    .padding(.horizontal)
+                    .padding(.horizontal)
                 }
                 
                 // book button
