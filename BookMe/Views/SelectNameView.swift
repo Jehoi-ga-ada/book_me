@@ -17,12 +17,8 @@ struct SelectNameView: View {
     var onPersonSelected: (PersonModel) -> Void
     
     var filteredPersons: [PersonModel] {
-        if searchText.isEmpty {
-            return persons
-        } else {
-            return persons.filter { $0.name.localizedCaseInsensitiveContains(searchText)
-            }
-        }
+        let filtered = searchText.isEmpty ? persons : persons.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        return filtered.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
     
     var body: some View {
