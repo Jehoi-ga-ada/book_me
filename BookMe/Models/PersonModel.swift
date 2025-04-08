@@ -21,5 +21,5 @@ class PersonModel: Identifiable {
         self.totalBooked = totalBooked
     }
     
-    static let sampleData = PersonData.generateFivePerson()
+    static let sampleData = PersonData.loadFromJSON()
 }

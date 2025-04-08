@@ -188,7 +188,7 @@ struct MapView: View {
                 // Using a non-optional BookFormView since we ensure the room is set before showing the sheet
                 
                 BookFormView(collabRoom: selectedCollabRoom!)
-                    .presentationDetents([bookingSheetDetent, .large], selection: $bookingSheetDetent)
+                    .presentationDetents([bookingSheetDetent, .large])
                     .presentationBackgroundInteraction(.enabled(upThrough: .large))
                     .presentationBackground {
                         Color.dark
