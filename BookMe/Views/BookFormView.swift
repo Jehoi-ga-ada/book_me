@@ -52,6 +52,7 @@ struct BookFormView: View {
                 // Image Preview
                 ScrollView(.horizontal){
                     HStack{
+                        
                         ForEach(collabRoom.imagePreviews.indices, id: \.self){ idx in
                             Image(collabRoom.imagePreviews[idx])
                                 .resizable()
@@ -66,10 +67,12 @@ struct BookFormView: View {
                         }
                     }
                     .sheet(isPresented: $isImagePreviewPresented) {
+                        
                         ImagePagerView(images:collabRoom.imagePreviews, currentIndex: $selectedIndex)
-                    }
-                    .padding()
-                }.frame(height: 110)
+                    }.padding(.bottom)
+                    
+                }.frame(height: 110).padding(.horizontal)
+                    
                 
                 
                 // NavigationLink to SelectNameView with a callback

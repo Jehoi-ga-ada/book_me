@@ -33,7 +33,6 @@ struct ZoomableImage: View {
                     }
             )
             // Reset zoom scale when this image becomes the current image
-            // TODO: Harus update codenya karena method kyk gini udh deprecated
             .onChange(of: currentIndex) { _, newValue in
                 if newValue == index {
                     scale = 1.0
@@ -52,15 +51,43 @@ struct ZoomableImage: View {
 struct ImagePagerView: View {
     let images: [String]
     @Binding var currentIndex: Int
-
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
-        TabView(selection: $currentIndex) {
-            ForEach(images.indices, id: \.self) { index in
-                ZoomableImage(imageName: images[index], index: index, currentIndex: $currentIndex)
-                    .tag(index)
+        ZStack {
+            Capsule()
+                   .fill(Color.secondary)
+                   .frame(width: 35, height: 5)
+            VStack(spacing: 0) {
+                
+                // Image pager
+                TabView(selection: $currentIndex) {
+                    ForEach(images.indices, id: \.self) { index in
+                        ZoomableImage(imageName: images[index], index: index, currentIndex: $currentIndex)
+                            .tag(index)
+                    }
+                }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+                .frame(width: UIScreen.main.bounds.width * 1, height: UIScreen.main.bounds.height * 0.6)
+                .cornerRadius(0)
+                
+                // Page indicator text
+                Text("\(currentIndex + 1) / \(images.count)")
+                    .foregroundColor(.white)
+                    .padding(.top, 10)
             }
+            .padding()
         }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-        .background(Color.black) // optional styling
     }
 }
+
+// Update in BookFormView:
+// Replace:
+// .sheet(isPresented: $isImagePreviewPresented) {
+//     ImagePagerView(images:collabRoom.imagePreviews, currentIndex: $selectedIndex)
+// }
+//
+// With:
+// .imagePopup(isPresented: $isImagePreviewPresented,
+//             images: collabRoom.imagePreviews,
+//             currentIndex: $selectedIndex)
