@@ -20,6 +20,7 @@ struct EditBookingView: View {
     
     // Added a state to track if form is valid
     @State private var isFormValid = true
+    @State private var showDeleteConfirmation = false
     
     var availability: [String: Bool] {
         var availableSessions = bookingReceipt.collab.availableSessions(on: selectedDate)
@@ -131,7 +132,6 @@ struct EditBookingView: View {
                     }
                 }
                 
-                Spacer(minLength: 40)
                 
                 // Update button
                 VStack {
@@ -154,6 +154,26 @@ struct EditBookingView: View {
                     .disabled(selectedSession == nil || selectedPerson == nil)
                     .padding(.horizontal)
                     .padding(.bottom, 8)
+                    
+                    Button(action: {
+                        showDeleteConfirmation = true
+                    }) {
+                        Text("Delete")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.red)
+                          
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    .alert("Delete Booking", isPresented: $showDeleteConfirmation) {
+                        Button("Cancel", role: .cancel) { }
+                        Button("Delete") {
+                            deleteBooking()
+                        }
+                    } message: {
+                        Text("Are you sure you want to delete this booking? This action cannot be undone.")
+                    }
                 }
             }
             .padding(.vertical)
@@ -200,6 +220,35 @@ struct EditBookingView: View {
                     updateBooking()
                 },
                 secondaryAction: {
+                    dismiss()
+                }
+            )
+        }
+    }
+    
+    private func deleteBooking() {
+        
+        do {
+            try context.save()
+            alertController.showBasicAlert(
+                title: "Booking Deleted",
+                message: "Your booking has been successfully deleted.",
+                buttonText: "OK",
+                action: {
+                    context.delete(bookingReceipt)
+                    dismiss()
+                }
+            )
+        } catch {
+            alertController.showErrorAlert(
+                title: "Deletion Failed",
+                message: "An error occurred while deleting your booking.",
+                retryButtonText: "Retry",
+                cancelButtonText: "Cancel",
+                retryAction: {
+                    deleteBooking()
+                },
+                cancelAction: {
                     dismiss()
                 }
             )
