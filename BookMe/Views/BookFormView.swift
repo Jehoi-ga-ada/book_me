@@ -69,7 +69,7 @@ struct BookFormView: View {
                         ImagePagerView(images:collabRoom.imagePreviews, currentIndex: $selectedIndex)
                     }
                     .padding()
-                }.frame(height: 150)
+                }.frame(height: 110)
                 
                 
                 // NavigationLink to SelectNameView with a callback
