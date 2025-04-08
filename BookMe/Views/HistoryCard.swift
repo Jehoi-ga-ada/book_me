@@ -89,7 +89,7 @@ struct HistoryCard: View {
                     }
                 }.background(Color.prime.opacity(0.5))
             }
-            .frame(width: 370, height: 170)
+            .frame(width: 370, height: 156)
             .background(Color.dark)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
