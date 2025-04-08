@@ -35,6 +35,11 @@ struct BookFormView: View {
     @State private var isImagePreviewPresented = false
     @State private var selectedIndex = 0
     
+    @Environment(\.dismiss) private var dismiss
+    private func dismissModal(){
+        dismiss()
+    }
+    
     var body: some View {
         NavigationView {
             VStack() {
@@ -157,9 +162,13 @@ struct BookFormView: View {
         .withAlertController(alertController)
     }
     
+    
     // MARK: Booking + Success alert logic
     private func bookRoom() {
-        guard let session = selectedSession, let person = selectedPerson, BookingReceiptModel.isValidPin(inputPin) else {
+        guard let session = selectedSession, let person = selectedPerson, BookingReceiptModel.isValidPin(inputPin)
+            //Close Modal
+            
+        else {
             // Handle invalid input or show an error message
             alertController.showErrorAlert(
                 title: "Invalid Input",
@@ -186,8 +195,10 @@ struct BookFormView: View {
             selectedPerson = nil
             alertController.showBasicAlert(
                 title: "Booking Confirmed",
-                message: "Your booking has been successfully recorded."
+                message: "Your booking has been successfully recorded.",
+                action: dismissModal
             )
+            
         } catch {
             alertController.showErrorAlert(
                 title: "Booking Failed",
