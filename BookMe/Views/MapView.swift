@@ -27,7 +27,7 @@ struct MapView: View {
     @State private var bottomSheetHeight: PresentationDetent = .height(64)
     
     // New state to track the booking sheet detent
-    @State private var bookingSheetDetent: PresentationDetent = .medium
+    @State private var bookingSheetDetent: PresentationDetent = .height(450)
     
     // MARK: - Gesture Motion
     var magnification: some Gesture {
@@ -90,8 +90,7 @@ struct MapView: View {
         focusOnPin(collabRoom.pinPointsZoomLocation.cgPoint, geometry: geometry)
         
         // Reset sheet detent to medium
-        bookingSheetDetent = .medium
-        
+        bookingSheetDetent = .height(450)
         // Hide bottom sheet first
         showingBottomSheet = false
         
@@ -187,8 +186,9 @@ struct MapView: View {
                 showingBottomSheet = true
             }) {
                 // Using a non-optional BookFormView since we ensure the room is set before showing the sheet
+                
                 BookFormView(collabRoom: selectedCollabRoom!)
-                    .presentationDetents([.medium, .large], selection: $bookingSheetDetent)
+                    .presentationDetents([bookingSheetDetent, .large], selection: $bookingSheetDetent)
                     .presentationBackgroundInteraction(.enabled(upThrough: .large))
                     .presentationBackground {
                         Color.dark
