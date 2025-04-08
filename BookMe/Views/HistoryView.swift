@@ -27,7 +27,8 @@ struct HistoryView: View {
     
     var filteredReceipts: [BookingReceiptModel] {
         bookingReceipts.filter {
-            searchText.isEmpty || $0.collab.name.lowercased().contains(searchText.lowercased()) || $0.bookedBy.name.lowercased().contains(searchText.lowercased())
+            searchText.isEmpty ||
+            $0.collab.name.lowercased().contains(searchText.lowercased()) || $0.bookedBy.name.lowercased().contains(searchText.lowercased())
         }
     }
     

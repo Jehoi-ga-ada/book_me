@@ -23,7 +23,7 @@ struct CollabRoomPinView: View {
             Button(action: {
                 onTap()
             }) {
-                Text(collabRoom.name)
+                Text(collabRoom.name.components(separatedBy: " ").last!)
                     .font(.title.bold())
                     .foregroundColor(.white)
                     .padding(8)

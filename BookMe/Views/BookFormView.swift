@@ -44,7 +44,7 @@ struct BookFormView: View {
         NavigationView {
             VStack() {
                 HStack {
-                    Text("Collab Room \(collabRoom.name)")
+                    Text("\(collabRoom.name)")
                         .font(.title)
                         .bold()
                         .padding()

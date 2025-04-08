@@ -34,7 +34,7 @@ struct HistoryCard: View {
                 VStack {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading) {
-                            Text("Collab Room \(model.collab.name)")
+                            Text("\(model.collab.name)")
                                 .font(.title3)
                                 .bold()
                             Text("Booked By \(model.bookedBy.name)")

@@ -9,13 +9,13 @@ import Foundation
 final class CollabRoomData {
     static func generateCollabRooms() -> [CollabRoomModel] {
         let names: [String] = [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "7",
-            "7A"
+            "Collab Room 1",
+            "Collab Room 2",
+            "Collab Room 3",
+            "Collab Room 4",
+            "Collab Room 5",
+            "Collab Room 7",
+            "Collab Room 7A"
         ]
 
         let pinPointsLocation: [CGPoint] = [

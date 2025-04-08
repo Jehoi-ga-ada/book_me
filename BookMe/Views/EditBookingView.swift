@@ -55,7 +55,7 @@ struct EditBookingView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HStack {
-                    Text("Booking Room \(bookingReceipt.collab.name)")
+                    Text("\(bookingReceipt.collab.name)")
                         .font(.title2)
                         .bold()
                     Spacer()
