@@ -41,7 +41,7 @@ final class BookingReceiptData {
         }
         
         var bookingReceipts: [BookingReceiptModel] = []
-        for i in 0..<bookedBy.count {
+        for i in 0..<pin.count {
             bookingReceipts.append(BookingReceiptModel(collab: collabRooms[i], date: dates[i], session: session[i], bookedBy: bookedBy[i], pin: pin[i]))
         }
         return bookingReceipts
