@@ -51,11 +51,15 @@ final class CollabRoomData {
 //            ]
 //        }
         
-        let images: [String] =
+        let images: [[String]] =
             [
-                "preview_1",
-                "preview_2",
-                "preview_3",
+                ["Collab Room 1", "Collab Room 1", "Collab Room 1"],
+                ["Collab Room 2", "Collab Room 2", "Collab Room 2"],
+                ["Collab Room 3", "Collab Room 3 - 1", "Collab Room 3 - 2"],
+                ["Collab Room 4", "Collab Room 4 - 2", "Collab Room 4 - 3"],
+                ["Collab Room 5", "Collab Room 5 - 2", "Collab Room 5 - 3"],
+                ["Collab Room 7", "Collab Room 7", "Collab Room 7"],
+                ["Collab Room 7A", "Collab Room 7A", "Collab Room 7A"],
             ]
         
         var collabRooms: [CollabRoomModel] = []
@@ -63,7 +67,7 @@ final class CollabRoomData {
             collabRooms.append(CollabRoomModel(name: names[i],
                                           pinPointsLocation: pinPointsLocation[i],
                                           pinPointsZoomLocation: pinPointsZoomLocation[i],
-                                               imagePreviews: images))
+                                               imagePreviews: images[i]))
         }
         return collabRooms
     }

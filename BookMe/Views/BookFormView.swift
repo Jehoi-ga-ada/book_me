@@ -62,7 +62,7 @@ struct BookFormView: View {
                             Image(collabRoom.imagePreviews[idx])
                                 .resizable()
                                 .scaledToFill()
-                            //                            .frame(width: 100, height: 80)
+                                .frame(width: 140, height: 110)
                                 .clipped()
                                 .onTapGesture {
                                     // On tap, record the index and present the sheet
