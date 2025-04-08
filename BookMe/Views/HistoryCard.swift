@@ -30,27 +30,37 @@ struct HistoryCard: View {
         Button(action: {
             onCardClick()
         }) {
-            VStack {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading) {
-                        Text("Collab Room \(model.collab.name)")
-                            .font(.title)
-                            .bold()
-                        Text("Booked By \(model.bookedBy.name)")
+            VStack(spacing: 0) {
+                VStack {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading) {
+                            Text("Collab Room \(model.collab.name)")
+                                .font(.title3)
+                                .bold()
+                            Text("Booked By \(model.bookedBy.name)")
+                        }
+                        Spacer()
+                        VStack() {
+                            Text("\(model.date.formatted(date: .numeric, time: .omitted))")
+                                .font(.title3)
+                                .bold()
+                            Text("\(model.session)")
+                        }
+                        .background(Color.dark)
+                        .cornerRadius(0)
                     }
                     Spacer()
-                    VStack(alignment: .center) {
-                        Text("\(model.date.formatted(date: .numeric, time: .omitted))")
-                            .font(.title3)
-                            .bold()
-                        Text("\(model.session)")
-                    }
-                    .padding()
-                    .background(Color.dark)
-                    .cornerRadius(0)
                 }
-                Spacer()
-                HStack {
+                .padding(20)
+                
+                // Top border for buttons
+                Rectangle()
+                    .frame(height: 2)
+                    .foregroundColor(Color.prime)
+                
+                // Button row
+                HStack(spacing: 0) {
+                    // Edit button
                     Button {
                         currentAction = .edit
                         showPinPrompt()
@@ -58,36 +68,31 @@ struct HistoryCard: View {
                         Text("Edit")
                             .font(.headline)
                             .bold()
-                            .frame(width: 60)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 20)
                             .foregroundColor(.white)
-                            .padding(.horizontal, 36)
-                            .padding(.vertical, 8)
-                            .background(Color.orange)
-                            .cornerRadius(999)
                     }
-                   
                     
-                    Spacer()
+                    // Middle divider
+                    Rectangle()
+                        .frame(width: 2)
+                        .foregroundColor(Color.prime)
                     
-                    Button() {
+                    // Delete button
+                    Button {
                         currentAction = .delete
                         showPinPrompt()
                     } label: {
-                        Text ("Delete") .font(.headline)
+                        Text("Delete")
+                            .font(.headline)
                             .bold()
-                            .frame(width: 60)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 20)
                             .foregroundColor(.white)
-                            .padding(.horizontal, 36)
-                            .padding(.vertical, 8)
-                            .background(Color.red)
-                            .cornerRadius(999)
                     }
-                   
-                }
-                .padding(.top, 8)
+                }.background(Color.prime.opacity(0.5))
             }
-            .padding(20)
-            .frame(width: 370, height: 190)
+            .frame(width: 370, height: 150)
             .background(Color.dark)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
