@@ -37,7 +37,7 @@ struct BookFormView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
+            VStack() {
                 HStack {
                     Text("Collab Room \(collabRoom.name)")
                         .font(.title)
@@ -50,24 +50,26 @@ struct BookFormView: View {
                 }
                 
                 // Image Preview
-                HStack{
-                    ForEach(collabRoom.imagePreviews.indices, id: \.self){ idx in
-                        Image(collabRoom.imagePreviews[idx])
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 80)
-                            .clipped()
-                            .onTapGesture {
-                                // On tap, record the index and present the sheet
-                                selectedIndex = idx
-                                isImagePreviewPresented.toggle()
-                            }
+                ScrollView(.horizontal){
+                    HStack{
+                        ForEach(collabRoom.imagePreviews.indices, id: \.self){ idx in
+                            Image(collabRoom.imagePreviews[idx])
+                                .resizable()
+                                .scaledToFill()
+                            //                            .frame(width: 100, height: 80)
+                                .clipped()
+                                .onTapGesture {
+                                    // On tap, record the index and present the sheet
+                                    selectedIndex = idx
+                                    isImagePreviewPresented.toggle()
+                                }
+                        }
                     }
-                }
-                .sheet(isPresented: $isImagePreviewPresented) {
-                    ImagePagerView(images:collabRoom.imagePreviews, currentIndex: $selectedIndex)
-                }
-                .padding()
+                    .sheet(isPresented: $isImagePreviewPresented) {
+                        ImagePagerView(images:collabRoom.imagePreviews, currentIndex: $selectedIndex)
+                    }
+                    .padding()
+                }.frame(height: 150)
                 
                 
                 // NavigationLink to SelectNameView with a callback
@@ -92,7 +94,9 @@ struct BookFormView: View {
                 Text("Select a Session")
                     .font(.title2)
                     .bold()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 5)
+                    .padding(.horizontal)
                 
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -119,7 +123,7 @@ struct BookFormView: View {
                             .cornerRadius(10)
                         }
                     }
-                    .padding(.horizontal)
+//                    .padding(.horizontal)
                 }
                 
                 // book button
