@@ -23,23 +23,20 @@ struct CollabRoomPinView: View {
             Button(action: {
                 onTap()
             }) {
-                Text(collabRoom.name.components(separatedBy: " ").last!)
-                    .font(.title.bold())
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .background(Color("darkColor").opacity(0.8))
-                    .cornerRadius(99)
-                    .frame(width: 64, height: 32)
-            }
-            
-            // Pin image button
-            Button(action: {
-                onTap()
-            }) {
-                Image("pin_point")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 40)
+                VStack {
+                    Text(collabRoom.name.components(separatedBy: " ").last!)
+                        .font(.title.bold())
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Color("darkColor").opacity(0.8))
+                        .cornerRadius(99)
+                        .frame(width: 64, height: 32)
+                    Image("pin_point")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 40)
+                        .padding(.top, 4)
+                }
             }
         }
         .position(collabRoom.pinPointsLocation.cgPoint)
