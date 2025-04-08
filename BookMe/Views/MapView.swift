@@ -132,7 +132,11 @@ struct MapView: View {
                 .offset(offset)
                 
                 VStack {
+                    Spacer()
+                    
                     HStack {
+                        Spacer()
+                        
                         Button {
                             withAnimation {
                                 mapScale = 1.0
@@ -140,12 +144,16 @@ struct MapView: View {
                                 lastOffset = .zero
                             }
                         } label: {
-                            Image(systemName: "backward.circle.fill")
+                            Image("ResetButton")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .background(Color.dark.opacity(0.7))
+                                .cornerRadius(25)
+                                .padding()
+                                .shadow(radius: 4)
                         }
-                        Spacer()
+                        .padding(.bottom, 100) // Adjust to ensure it's above the bottom sheet
                     }
-                    .padding()
-                    Spacer()
                 }
             }
             .gesture(drag(for: geometry).simultaneously(with: magnification))
@@ -171,6 +179,7 @@ struct MapView: View {
                     showingBookingForm = false
                     showingBottomSheet = true
                 }
+                
             }
             .sheet(isPresented: $showingBookingForm, onDismiss: {
                 // Make sure to show bottom sheet when booking form is dismissed
