@@ -31,6 +31,35 @@ struct HistoryView: View {
             $0.collab.name.lowercased().contains(searchText.lowercased()) || $0.bookedBy.name.lowercased().contains(searchText.lowercased())
         }
     }
+    // Helper to format date
+    var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full
+        return formatter
+    }
+
+    // Grouped receipts by date (including "Today")
+    var groupedReceipts: [(key: String, value: [BookingReceiptModel])] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        let grouped = Dictionary(grouping: filteredReceipts) { receipt -> String in
+            let receiptDate = calendar.startOfDay(for: receipt.date)
+            if receiptDate == today {
+                return "Today"
+            } else {
+                return dateFormatter.string(from: receiptDate)
+            }
+        }
+        
+        // Sort by date descending
+        return grouped.sorted {
+            let lhsDate = $0.key == "Today" ? Date() : dateFormatter.date(from: $0.key) ?? Date.distantPast
+            let rhsDate = $1.key == "Today" ? Date() : dateFormatter.date(from: $1.key) ?? Date.distantPast
+            return lhsDate < rhsDate
+        }
+    }
+
     
     var body: some View {
         NavigationStack {
@@ -48,15 +77,25 @@ struct HistoryView: View {
                     }
                     .searchable(text: $searchText, prompt: "Search Booking History")
                 ScrollView {
-                    ForEach(filteredReceipts) { receipt in
-                        // Using updated wrapper
-                        HistoryCardWrapper(
-                            model: receipt,
-                            focusedCardId: $focusedCardId,
-                            onFocusOnPin: onFocusOnPin,
-                            geometry: geometry
-                        )
-                        .padding(8)
+                    ForEach(groupedReceipts, id: \.key) { dateKey, receipts in
+                        Section(header:
+                            Text(dateKey)
+                                .font(.title3)
+                                .bold()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal)
+                                .padding(.top, 12)
+                        ) {
+                            ForEach(receipts) { receipt in
+                                HistoryCardWrapper(
+                                    model: receipt,
+                                    focusedCardId: $focusedCardId,
+                                    onFocusOnPin: onFocusOnPin,
+                                    geometry: geometry
+                                )
+                                .padding(.horizontal, 8)
+                            }
+                        }
                     }
                 }
             }
