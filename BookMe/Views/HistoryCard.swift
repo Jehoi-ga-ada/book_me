@@ -38,20 +38,17 @@ struct HistoryCard: View {
                                 .font(.title3)
                                 .bold()
                             Text("Booked By \(model.bookedBy.name)")
+                            Text("\(model.session)")
                         }
                         Spacer()
                         VStack() {
-                            Text("\(model.date.formatted(date: .numeric, time: .omitted))")
-                                .font(.title3)
-                                .bold()
-                            Text("\(model.session)")
                         }
                         .background(Color.dark)
                         .cornerRadius(0)
                     }
                     Spacer()
                 }
-                .padding(20)
+                .padding(EdgeInsets(top: 20, leading: 20, bottom: 10, trailing: 20))
                 
                 // Top border for buttons
                 Rectangle()
@@ -92,7 +89,7 @@ struct HistoryCard: View {
                     }
                 }.background(Color.prime.opacity(0.5))
             }
-            .frame(width: 370, height: 150)
+            .frame(width: 370, height: 170)
             .background(Color.dark)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
