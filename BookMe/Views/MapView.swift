@@ -65,10 +65,14 @@ struct MapView: View {
                     width: lastOffset.width + gesture.translation.width,
                     height: lastOffset.height + gesture.translation.height
                 )
-                offset = clampedOffset(for: newOffset, in: geometry)
+                withAnimation{
+                    offset = clampedOffset(for: newOffset, in: geometry)
+                }
             }
             .onEnded { _ in
-                lastOffset = offset
+                withAnimation{
+                    lastOffset = offset
+                }
             }
     }
     
