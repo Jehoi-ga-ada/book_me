@@ -61,21 +61,35 @@ struct MapView: View {
     func drag(for geometry: GeometryProxy) -> some Gesture {
         DragGesture()
             .onChanged { gesture in
+                // Update the offset immediately without applying clamping so the view tracks the user's finger exactly.
                 let newOffset = CGSize(
                     width: lastOffset.width + gesture.translation.width,
                     height: lastOffset.height + gesture.translation.height
                 )
-                withAnimation{
-                    offset = clampedOffset(for: newOffset, in: geometry)
-                }
+                offset = newOffset
             }
-            .onEnded { _ in
-                withAnimation{
-                    lastOffset = offset
+            .onEnded { gesture in
+                // Calculate the proposed final offset.
+                let proposedOffset = CGSize(
+                    width: lastOffset.width + gesture.translation.width,
+                    height: lastOffset.height + gesture.translation.height
+                )
+                // Compute the clamped offset based on current geometry.
+                let clamped = clampedOffset(for: proposedOffset, in: geometry)
+                
+                // If the proposed offset is out-of-bounds, animate correction.
+                if proposedOffset != clamped {
+                    withAnimation() {
+                        offset = clamped
+                    }
+                } else {
+                    // Otherwise, update immediately.
+                    offset = proposedOffset
                 }
+                // Update lastOffset to reflect the final position.
+                lastOffset = offset
             }
     }
-    
     // MARK: - Focus on Pin function
     /// Make this a normal instance method so it can modify `mapScale`, `offset`, etc.
     private func focusOnPin(_ pin: CGPoint, geometry: GeometryProxy) {
