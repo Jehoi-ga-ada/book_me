@@ -36,5 +36,7 @@ To run this app, follow these steps:
 
 ## Contributors 👥
 Vincent Wisnata
+
 Aurelly Joeandani
+
 Jehoiada Wong
